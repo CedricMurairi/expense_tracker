@@ -86,7 +86,7 @@ def get_recommendations(data):
         savings_increase = savings_gap / savings
         savings_increase_percent = round(savings_increase * 100, 2)
         recommendation['potential_savings'] = {
-            'value': savings_gap,
+            'value': abs(round(savings_gap, 2)),
             'saving_increase_percent': abs(savings_increase_percent),
             'messages': {
                 0: f"Based on your current spending habit you can up your saving goal by approximately {abs(savings_gap)} more, that's a {abs(savings_increase_percent)}% increase",
