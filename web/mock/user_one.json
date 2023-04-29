@@ -1,0 +1,34 @@
+{
+    "weights" : {
+      "Food Expenditure": 0.2,
+      "Restaurant and Hotels Expenditure": 0.05,
+      "Alcoholic Beverages Expenditure": 0.01,
+      "Tobacco Expenditure": 0.01,
+      "Clothing and Other Wear Expenditure": 0.04,
+      "Housing and Water Expenditure": 0.3,
+      "Medical Care Expenditure": 0.05,
+      "Transportation Expenditure": 0.05,
+      "Communication Expenditure": 0.1,
+      "Education and Learning Expenditure": 0.1,
+      "Miscellaneous Expenditure": 0.05,
+      "Special Occasions Expenditure": 0.04,
+      "Gardening Expenditure": 0.01
+    },
+    "expenditures" :{
+      "Food Expenditure": 290000,
+      "Restaurant and Hotels Expenditure": 120000,
+      "Alcoholic Beverages Expenditure": 24000,
+      "Tobacco Expenditure": 24000,
+      "Clothing and Other Wear Expenditure": 96000,
+      "Housing and Water Expenditure": 725000,
+      "Medical Care Expenditure": 29000,
+      "Transportation Expenditure": 29000,
+      "Communication Expenditure": 29000,
+      "Education and Learning Expenditure": 29000,
+      "Miscellaneous Expenditure": 29000,
+      "Special Occasions Expenditure": 29000,
+      "Gardening Expenditure": 29000
+    },
+    "income": 2900000,
+    "savings": 483333
+  }

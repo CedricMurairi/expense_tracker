@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
 import joblib
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 expenditures = ['Food Expenditure',
                 'Restaurant and Hotels Expenditure',
@@ -33,11 +35,9 @@ def docs():
 
 @app.route("/recommendation", methods=["POST"])
 def recommend():
-    user_data = [1, 1, 1]
-    features = [np.array(user_data)]
-    recommendations = get_recommendations(features)
-
-    return render_template("index.html", recommendation_result=recommendations)
+    if request.method == "POST":
+        data = request.get_json()
+    return get_recommendations(data)
 
 
 def get_recommendations(data):
@@ -51,42 +51,23 @@ def get_recommendations(data):
 
     recommendation = {}
 
-    # Expenditure weights
-    # weights = {'Food Expenditure': 0.2,
-    #            'Restaurant and Hotels Expenditure': 0.05,
-    #            'Alcoholic Beverages Expenditure': 0.01,
-    #            'Tobacco Expenditure': 0.01,
-    #            'Clothing and Other Wear Expenditure': 0.04,
-    #            'Housing and Water Expenditure': 0.3,
-    #            'Medical Care Expenditure': 0.05,
-    #            'Transportation Expenditure': 0.05,
-    #            'Communication Expenditure': 0.1,
-    #            'Education and Learning Expenditure': 0.1,
-    #            'Miscellaneous Expenditure': 0.05,
-    #            'Special Occasions Expenditure': 0.04,
-    #            'Gardening Expenditure': 0.01
-    #            }
-
     weights = data['weights']
     expenditures = data['expenditures']
 
     income = data['income']
     savings = data['savings']
 
-    # Calculate maximum spending in each category based on income and weights
     max_spending = {}
     for col in weights:
         max_spending[col] = (income - savings) * weights[col]
 
-    # Create a DataFrame from the user input
     user_df = pd.DataFrame.from_dict(
         {'Total Income': [income], **expenditures, 'Savings': [savings]})
 
-    # Determine the cluster of the user
-    kmeans = joblib.load('clustering_model.pkl')
+    kmeans = joblib.load('./models/clustering_model.pkl')
     user_cluster = kmeans.predict(user_df.drop(['Savings'], axis=1))[0]
 
-    model = joblib.load(f'model_cluster_{user_cluster}.pkl')
+    model = joblib.load(f'./models/model_cluster_{user_cluster}.pkl')
 
     user_savings = model.predict(user_df.drop(['Savings'], axis=1))[0]
 
@@ -98,10 +79,8 @@ def get_recommendations(data):
         recommendation['possible_savings'] = {
             'value': user_savings,
             'saving_cut_percent': saving_cut_percent,
-            'message': {
-                0: f"""
-                        With your current spending habits you can only save approximately {user_savings}, that's a {saving_cut_percent}% cut.
-                    """,
+            'messages': {
+                0: f"With your current spending habits you can only save approximately {user_savings}, that's a {saving_cut_percent}% cut.",
                 1: f"To meet the extra {savings_gap} please follow our recommendations."
             }
         }
@@ -109,12 +88,10 @@ def get_recommendations(data):
         savings_increase = savings_gap / savings
         savings_increase_percent = round(savings_increase * 100, 2)
         recommendation['potential_savings'] = {
-            'value': savings_gap,
-            'saving_cut_percent': savings_increase_percent,
-            'message': {
-                0: f"""
-                        Based on your current spending habit you can up your saving goal by approximately {abs(savings_gap)} more, that's a {savings_increase_percent}% increase
-                    """,
+            'value': abs(round(savings_gap, 2)),
+            'saving_increase_percent': abs(savings_increase_percent),
+            'messages': {
+                0: f"Based on your current spending habit you can up your saving goal by approximately {abs(savings_gap)} more, that's a {abs(savings_increase_percent)}% increase",
                 1: "Or follow our recommendation on how you can allocate more to your expenditures."
             }
         }
@@ -124,34 +101,65 @@ def get_recommendations(data):
             if expenditures[col] > max_spending[col]:
                 overspending_reduction = (
                     expenditures[col] - max_spending[col]) / expenditures[col]
-                if len(recommendation['overspending']) > 0:
-                    recommendation['overspending'][col] = {
-                        'overspending_reduction': overspending_reduction,
-                        'overspending_reduction_percent': round(overspending_reduction * 100, 2),
-                        'spending_baseline': max_spending[col],
+
+                overspending_details = {
+                    'overspending_reduction_percent': round(overspending_reduction * 100, 2),
+                    'spending_baseline': round(max_spending[col], 2),
+                    'messages': {
+                        0: f"You are overspending in {col} by {round(overspending_reduction * 100, 2)}%.",
+                        1: f"You should reduce your spending on {col} to {round(max_spending[col], 2)}."
                     }
+                }
+
+                if recommendation.get('overspending'):
+                    recommendation['overspending'][col] = overspending_details
                 else:
                     recommendation['overspending'] = {
-                        f"{col}": {
-                            
-                        },
+                        f"{col}": overspending_details
                     }
-                print(f"You are overspending in {col} by {round(overspending_reduction * 100, 2)}%. "
-                      f"You should reduce your spending on {col} to {round(max_spending[col], 2)}.")
+
                 continue
+
             elif expenditures[col] <= max_spending[col]:
-                print(
-                    f"You are within your budget on {col}. No spending cuts needed.")
                 weight = weights[col]
                 max_reduction = (user_savings - savings) * weight / expenditure
                 reduction = min(max_reduction, 1.0)
                 saved = round(reduction * expenditure, 2)
+
                 if savings >= user_savings:
-                    print(
-                        f"If you adjust your spending on {col} by {round(reduction * 100, 2)}%, you could save {abs(saved)} more per month.")
+                    adjustment_details = {
+                        'adjustment_percent': round(reduction * 100, 2),
+                        'to_save': abs(round(saved, 2)),
+                        'messages': {
+                            0: f"You are within your budget on {col}.",
+                            1: f"If you adjust your spending on {col} by {round(reduction * 100, 2)}%, you could save {abs(round(saved, 2))} more per month."
+                        }
+                    }
+
+                    if recommendation.get('adjustment'):
+                        recommendation['adjustment'][col] = adjustment_details
+                    else:
+                        recommendation['adjustment'] = {
+                            f"{col}": adjustment_details
+                        }
                 else:
-                    print(
-                        f"You could allocate {saved} more money on {col}, that's a {round(reduction * 100, 2)}% increase per month")
+                    allocation_details = {
+                        'allocation_percent': round(reduction * 100, 2),
+                        'to_allocate': round(saved, 2),
+                        'messages': {
+                            0: f"You are within your budget on {col}. No spending cut needed.",
+                            1: f"You could allocate {round(saved, 2)} more money on {col}, that's a {round(reduction * 100, 2)}% increase per month"
+                        }
+                    }
+
+                    if recommendation.get('allocation'):
+                        recommendation['allocation'][col] = allocation_details
+                    else:
+                        recommendation['allocation'] = {
+                            f"{col}": allocation_details
+                        }
+
+    return recommendation
 
 
 if __name__ == "__main__":
