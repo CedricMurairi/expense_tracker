@@ -64,10 +64,10 @@ def get_recommendations(data):
     user_df = pd.DataFrame.from_dict(
         {'Total Income': [income], **expenditures, 'Savings': [savings]})
 
-    kmeans = joblib.load('../models/clustering_model.pkl')
+    kmeans = joblib.load('./models/clustering_model.pkl')
     user_cluster = kmeans.predict(user_df.drop(['Savings'], axis=1))[0]
 
-    model = joblib.load(f'../models/model_cluster_{user_cluster}.pkl')
+    model = joblib.load(f'./models/model_cluster_{user_cluster}.pkl')
 
     user_savings = model.predict(user_df.drop(['Savings'], axis=1))[0]
 
