@@ -1,0 +1,21 @@
+[
+  {
+    "motif": "Pay Off a Debt",
+    "amount": 20000,
+    "saved": true,
+    "allocations": 1
+  },
+  {
+    "motif": "Invest In Crypto",
+    "amount": 10000,
+    "saved": false,
+    "allocations": 1
+  },
+  { "motif": "Buy a Laptop", "amount": 10000, "saved": true, "allocations": 1 },
+  {
+    "motif": "Pay Tuition",
+    "amount": 1000000,
+    "saved": false,
+    "allocations": 10
+  }
+]
