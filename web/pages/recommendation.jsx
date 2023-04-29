@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MainLayout from "@components/layout/main_layout";
-import UserData from "@mock/user_one.json";
+import UserData from "@mock/user_two.json";
 import fetch_recommendations from "@data/recomendation";
 import RecommendationCard from "@components/recommendation/card";
 import SavingsRecommendationCard from "@components/recommendation/savings_card";

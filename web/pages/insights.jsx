@@ -1,6 +1,6 @@
 import React from "react";
 import MainLayout from "@components/layout/main_layout";
-import UserData from "@mock/user_one.json";
+import UserData from "@mock/user_two.json";
 import ExpenditureChart from "@components/insights/expenditure_chart";
 import IncomeSavingsExpenditureChart from "@components/insights/income_expenditure_chart";
 

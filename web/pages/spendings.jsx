@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MainLayout from "@components/layout/main_layout";
 import Form from "@components/spending/form";
-import UserData from "@mock/user_one.json";
+import UserData from "@mock/user_two.json";
 
 export default function Spendings() {
   useEffect(() => {
