@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 from flask import Flask, request, render_template
 import joblib
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 expenditures = ['Food Expenditure',
                 'Restaurant and Hotels Expenditure',
