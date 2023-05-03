@@ -9,7 +9,7 @@ The app is a proof of concept for an ideal app that does the following:
 
 ## Application
 
-- API (Hosted on Heroku): [https://cashless-tracker-api.herokuapp.com]('https://cashless-tracker-api.herokuapp.com')
+- API (Hosted on Heroku): [https://cashless-tracker-api.herokuapp.com](https://cashless-tracker-api.herokuapp.com)
 - Web Client (Hosted on Netlify): [https://expenditures-tracker.netlify.app](https://expenditures-tracker.netlify.app)
 
 ## How to Run (this guide assumes you as on a UNIX OS like Linux or Mac OS)
@@ -71,4 +71,4 @@ To run the app on your local machine proceed with:
 
 ### Video
 
-Link to the demo video: [https://drive.google.com/file/d/1wS6Kmap-K8Cguoe3vYOt0g8CH3Lhm4zm/view?usp=sharing]('https://drive.google.com/file/d/1wS6Kmap-K8Cguoe3vYOt0g8CH3Lhm4zm/view?usp=sharing')
+Link to the demo video: [https://drive.google.com/file/d/1wS6Kmap-K8Cguoe3vYOt0g8CH3Lhm4zm/view?usp=sharing](https://drive.google.com/file/d/1wS6Kmap-K8Cguoe3vYOt0g8CH3Lhm4zm/view?usp=sharing)
