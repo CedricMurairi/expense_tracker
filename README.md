@@ -71,4 +71,4 @@ To run the app on your local machine proceed with:
 
 ### Video
 
-Link to the demo video: []()
+Link to the demo video: [https://drive.google.com/file/d/1wS6Kmap-K8Cguoe3vYOt0g8CH3Lhm4zm/view?usp=sharing]('https://drive.google.com/file/d/1wS6Kmap-K8Cguoe3vYOt0g8CH3Lhm4zm/view?usp=sharing')
