@@ -1,12 +1,24 @@
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { auth } from "firebaseconfig";
 
 export default function NavigationBar({ page }) {
+  const route = useRouter();
   let routes = {
     Home: "/",
     Insights: "/insights",
     Goals: "/goals",
     Recommendation: "/recommendation",
+  };
+
+  const logout = async () => {
+    try {
+      await auth.signOut(auth);
+      route.push("/login");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -18,6 +30,9 @@ export default function NavigationBar({ page }) {
           </li>
         );
       })}
+      <div>
+        <button onClick={logout}>Logout</button>
+      </div>
     </div>
   );
 }

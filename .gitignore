@@ -2,3 +2,4 @@
 .vscode
 api/mlenv
 web/.env.local
+web/package-lock.json
