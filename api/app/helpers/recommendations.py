@@ -1,44 +1,5 @@
-import numpy as np
-import pandas as pd
-from flask import Flask, request, render_template
 import joblib
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)
-
-expenditures = ['Food Expenditure',
-                'Restaurant and Hotels Expenditure',
-                'Alcoholic Beverages Expenditure',
-                'Tobacco Expenditure',
-                'Clothing and Other Wear Expenditure',
-                'Housing and Water Expenditure',
-                'Medical Care Expenditure',
-                'Transportation Expenditure',
-                'Communication Expenditure',
-                'Education and Learning Expenditure',
-                'Miscellaneous Expenditure',
-                'Special Occasions Expenditure',
-                'Gardening Expenditure'
-                ]
-
-
-@app.route("/")
-def hoome():
-    return {"message": "API up", "status": 200, "action": "Go to /docs for documentation"}
-
-
-@app.route("/docs")
-def docs():
-    return render_template("docs.html")
-
-
-@app.route("/recommendation", methods=["POST"])
-def recommend():
-    if request.method == "POST":
-        data = request.get_json()
-    return get_recommendations(data)
-
+import pandas as pd
 
 def get_recommendations(data):
     '''
@@ -160,7 +121,3 @@ def get_recommendations(data):
                         }
 
     return recommendation
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
