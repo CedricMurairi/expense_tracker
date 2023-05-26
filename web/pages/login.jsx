@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { continueWithGoogle } from "@data/auth";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "firebaseconfig";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import Footer from "@components/shared/footer";
+import { setUser } from "@store/userSlice";
+import { setInfo } from "@store/infoSlice";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "firebaseconfig";
 
 export default function Login() {
   const route = useRouter();
+  const info = useSelector((state) => state.info.value);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user.displayName);
+        dispatch(
+          setUser({
+            uid: user.uid,
+            name: user.displayName,
+            email: user.email,
+            photo: user.photoURL,
+            accessToken: user.accessToken,
+          })
+        );
+        dispatch(setInfo({ message: "You are already logged in", type: "info", show: true }));
         route.push("/");
-      } else {
-        console.log("no user");
       }
     });
   }, []);
@@ -23,7 +35,16 @@ export default function Login() {
   const login = async () => {
     try {
       const user = continueWithGoogle();
-      console.log(user);
+      dispatch(
+        setUser({
+          uid: user.uid,
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+          accessToken: user.accessToken,
+        })
+      );
+      route.push("/");
     } catch (e) {
       console.log(e);
     }
@@ -73,7 +94,7 @@ export default function Login() {
           className="flex items-center py-2 px-5 border border-gray-500 rounded-xl"
         >
           <img
-          className="inline-block mr-2"
+            className="inline-block mr-2"
             width="25"
             height="25"
             src="https://img.icons8.com/color/48/google-logo.png"

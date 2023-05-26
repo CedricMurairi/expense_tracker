@@ -7,8 +7,6 @@ import SavingsCard from "@components/goals/saving_card";
 export default function Goals() {
   return (
     <MainLayout headerContent={"Saving Goals"} page={"Goals"}>
-      {/* Make sure to show every month if the saving goal has been met -- find a way */}
-      {/* On click to save now, people get to choose Mobile money or bank to put the money away */}
       <div className="">
         <Form />
         <div className="grid grid-cols-3 gap-2">
