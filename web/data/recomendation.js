@@ -1,7 +1,7 @@
 async function fetch_recommendations(input_data) {
   let API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  const res = await fetch(`${API_URL}/recommendation`, {
+  const res = await fetch(`${API_URL}/recommendations/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
