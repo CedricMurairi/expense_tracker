@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { continueWithGoogle } from "@data/auth";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
@@ -11,12 +11,11 @@ import { auth } from "firebaseconfig";
 
 export default function Login() {
   const route = useRouter();
-  const info = useSelector((state) => state.info.value);
   const dispatch = useDispatch();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user !== undefined && user !== null) {
         dispatch(
           setUser({
             uid: user.uid,
@@ -26,7 +25,13 @@ export default function Login() {
             accessToken: user.accessToken,
           })
         );
-        dispatch(setInfo({ message: "You are already logged in", type: "info", show: true }));
+        dispatch(
+          setInfo({
+            message: "You are already logged in",
+            type: "info",
+            show: true,
+          })
+        );
         route.push("/");
       }
     });
@@ -35,16 +40,18 @@ export default function Login() {
   const login = async () => {
     try {
       const user = continueWithGoogle();
-      dispatch(
-        setUser({
-          uid: user.uid,
-          name: user.displayName,
-          email: user.email,
-          photo: user.photoURL,
-          accessToken: user.accessToken,
-        })
-      );
-      route.push("/");
+      if (user !== null && user !== undefined) {
+        dispatch(
+          setUser({
+            uid: user?.uid,
+            name: user?.displayName,
+            email: user?.email,
+            photo: user?.photoURL,
+            accessToken: user?.accessToken,
+          })
+        );
+        route.push("/");
+      }
     } catch (e) {
       console.log(e);
     }
