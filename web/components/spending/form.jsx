@@ -16,6 +16,10 @@ export default function Form() {
   };
 
   const handlePaymentTypeClick = (index) => {
+    if (index === selectedPayment) {
+      setSelectedPayment(null);
+      return;
+    }
     setSelectedPayment(index);
   };
   return (
@@ -37,11 +41,11 @@ export default function Form() {
         </div>
         <div className="w-[50%] flex flex-row items-center justify-center">
           <input
-            className="px-5 py-2 my-5 border rounded-md border-gray-400"
+            className="max-sm:px-3 px-5 py-2 my-5 border rounded-md border-gray-400"
             type="text"
             placeholder="Amount"
           />
-          <span className="ml-2 text-2xl">RWF</span>
+          <span className="max-sm:text-lg ml-2 text-2xl">RWF</span>
         </div>
         <Button content={"Record"} />
       </form>

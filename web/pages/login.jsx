@@ -87,7 +87,7 @@ export default function Login() {
         </div>
         <div>
           <motion.div
-            className="text-2xl font-bold text-center mb-10 text-gray-500"
+            className="max-sm:text-lg text-2xl font-bold text-center mb-10 text-gray-500"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

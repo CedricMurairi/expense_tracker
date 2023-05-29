@@ -16,11 +16,12 @@ export default function Spendings() {
 
   return (
     <MainLayout headerContent="Spendings" page="Home">
-      <div>
-        <div className="text-xl bold py-1">
-          Income: {UserData["income"]} RWF
+      <div className="w-full">
+        <div className="max-sm:text-[15px] max-sm:mb-3 text-xl flex flex-row justify-center items-center mb-5 font-bold">
+          <p className=" bold py-1 text-green-500">In: {UserData["income"]} RWF</p>
+          <span className="mx-2 text-gray-500">{"|"}</span>
+          <p className=" bold py-1 text-red-600">Out: {Math.round(spent)} RWF</p>
         </div>
-        <div className="text-xl bold py-1">Spent: {Math.round(spent)} RWF</div>
         <Form />
       </div>
     </MainLayout>
