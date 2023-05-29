@@ -48,7 +48,7 @@ export default function MainLayout({ children, headerContent, page }) {
       />
       <Header content={headerContent} />
       <div
-        className={`${
+        className={`w-full ${
           showSettings ? "blur" : "blur-none"
         }`}
       >
