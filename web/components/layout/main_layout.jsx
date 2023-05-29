@@ -36,7 +36,7 @@ export default function MainLayout({ children, headerContent, page }) {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center p-24">
+    <div className="relative flex min-h-screen flex-col items-center justify-center max-sm:p-0 p-24">
       <Info data={info} />
       <Head>
         <title>{page}</title>
