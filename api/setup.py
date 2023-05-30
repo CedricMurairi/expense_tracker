@@ -3,9 +3,11 @@ from app.goals import goals_blueprint
 from app.insights import insights_blueprint
 from app.recommendations import recommendations_blueprint
 from app.expenditures import expenditures_blueprint
-from flask import Flask, render_template
+from flask import Flask, render_template, request, g
 from flask_cors import CORS
 from firebase import db
+from firebase import app as firebase_app
+from firebase_admin import auth
 
 app = Flask(__name__)
 CORS(app)
@@ -20,14 +22,27 @@ app.register_blueprint(payments_blueprint, url_prefix="/payments")
 app.add_url_rule('/', endpoint='home')
 
 
-# @app.before_request
-# def check_user():
-#     pass
+@app.before_request
+def check_user():
+    if request.method == "GET":
+        pass
+    if request.content_type != 'application/json':
+        return {"error": "Invalid Content-Type"}
+    data = request.get_json()
+    if data is None or data == {}:
+        return {"error": "No data provided"}
+
+    try:
+        id_token = request.authorization.token
+        decoded_token = auth.verify_id_token(id_token, app=firebase_app)
+        g.token = decoded_token
+    except Exception as e:
+        print(e)
 
 
 @app.route("/")
 def home():
-    return {"message": "API up", "status": 200, "action": "Go to /docs for documentation"}
+    return {"message": "API up", "action": "Go to /docs for documentation"}, 200
 
 
 @app.route("/docs")
