@@ -5,14 +5,29 @@ import PaymentTypes from "@mock/payment_type.json";
 import PaymentTypeSelector from "@components/shared/payment_type";
 import Button from "@components/shared/button";
 import useWindowSize from "@hooks/window_size";
+import { useDispatch } from "react-redux";
+import { setInfo } from "@store/infoSlice";
+import saveExpenditure from "@data/save_expenditure";
+import getFirebaseClientIdToken from "helpers/get_id_token";
 
 export default function Form() {
-  const [selectedLabel, setSelectedLabel] = useState(null);
+  const [selectedLabel, setSelectedLabel] = useState(0);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [amount, setAmount] = useState(0);
   const size = useWindowSize();
+  const dispatch = useDispatch();
 
   const handleLabelClick = (index) => {
+    if (index === selectedLabel) {
+      setSelectedLabel(null);
+      return;
+    }
     setSelectedLabel(index);
+    console.log(typeof index);
+  };
+
+  const updateSelectEvent = (e) => {
+    setSelectedLabel(Number.parseInt(e.target.value));
   };
 
   const handlePaymentTypeClick = (index) => {
@@ -22,6 +37,34 @@ export default function Form() {
     }
     setSelectedPayment(index);
   };
+
+  const updateAmount = (e) => {
+    setAmount(e.target.value);
+  };
+
+  const saveExpeditureEntry = async () => {
+    if (amount === 0 || selectedLabel === 0) {
+      dispatch(
+        setInfo({
+          message: "Amount or label missing",
+          type: "error",
+          show: true,
+        })
+      );
+      return;
+    }
+
+    const idToken = await getFirebaseClientIdToken();
+
+    const data = {
+      label: selectedLabel,
+      payment: selectedPayment,
+      amount: amount,
+    };
+    const result = await saveExpenditure(data, idToken);
+    console.log(result);
+  };
+
   return (
     <div>
       <form className="flex flex-col items-center mb-10">
@@ -41,20 +84,29 @@ export default function Form() {
         </div>
         <div className="w-[50%] flex flex-row items-center justify-center">
           <input
-            className="max-sm:px-3 px-5 py-2 my-5 border rounded-md border-gray-400"
+            onChange={updateAmount}
+            className="max-sm:px-3 px-5 py-2 my-5 border rounded-md border-gray-400 focus:outline-none"
             type="text"
             placeholder="Amount"
           />
           <span className="max-sm:text-lg ml-2 text-2xl">RWF</span>
         </div>
-        <Button content={"Record"} />
+        <Button action={saveExpeditureEntry} content={"Record"} />
       </form>
       {size.width < 1100 ? (
         <div className="flex flex-col items-center">
-          <select className="px-5 py-2 my-5 border rounded-md border-gray-400">
+          <select
+            defaultValue={selectedLabel}
+            onChange={updateSelectEvent}
+            className="px-5 py-2 my-5 border rounded-md border-gray-400"
+          >
+            <option disabled value={0}>
+              {" "}
+              -- select an option --{" "}
+            </option>
             {Labels.map((label, index) => {
               return (
-                <option key={index} value={label}>
+                <option key={index} value={index + 1}>
                   {label}
                 </option>
               );
@@ -69,9 +121,9 @@ export default function Form() {
                 key={index}
                 content={label}
                 handler={() => {
-                  handleLabelClick(index);
+                  handleLabelClick(index + 1);
                 }}
-                active={index === selectedLabel}
+                active={index + 1 === selectedLabel}
               />
             );
           })}
