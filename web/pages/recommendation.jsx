@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import MainLayout from "@components/layout/main_layout";
-import UserData from "@mock/user_two.json";
+import UserData from "@mock/user_one.json";
 import fetch_recommendations from "@data/recomendation";
 import RecommendationCard from "@components/recommendation/card";
 import SavingsRecommendationCard from "@components/recommendation/savings_card";
+import getFirebaseClientIdToken from "@helpers/get_id_token";
 
 export default function Recommendation() {
   const [recommendations, setRecommendations] = useState(null);
 
   useEffect(() => {
-    fetch_recommendations(UserData)
+    async function get_recommendations() {
+      const idToken = await getFirebaseClientIdToken();
+      fetch_recommendations(UserData, idToken)
       .then((data) => {
         setRecommendations(data);
         console.log(data);
@@ -17,7 +20,11 @@ export default function Recommendation() {
       .catch((error) => {
         console.error(error);
       });
-  }, [UserData]);
+    }
+
+    get_recommendations();
+    
+  }, []);
 
   return (
     <MainLayout headerContent={"Recommendation"} page={"Recommendation"}>
