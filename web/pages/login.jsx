@@ -16,15 +16,7 @@ export default function Login() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user !== undefined && user !== null) {
-        dispatch(
-          setUser({
-            uid: user.uid,
-            name: user.displayName,
-            email: user.email,
-            photo: user.photoURL,
-            accessToken: user.accessToken,
-          })
-        );
+        dispatch(setUser(user.providerData[0]));
         dispatch(
           setInfo({
             message: "You are already logged in",
@@ -39,19 +31,7 @@ export default function Login() {
 
   const login = async () => {
     try {
-      const user = continueWithGoogle();
-      if (user !== null && user !== undefined) {
-        dispatch(
-          setUser({
-            uid: user?.uid,
-            name: user?.displayName,
-            email: user?.email,
-            photo: user?.photoURL,
-            accessToken: user?.accessToken,
-          })
-        );
-        route.push("/");
-      }
+      continueWithGoogle();
     } catch (e) {
       console.log(e);
     }
