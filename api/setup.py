@@ -34,21 +34,34 @@ class UnauthorizedClientError(Exception):
     pass
 
 
+def verify_id_token(id_token):
+    try:
+        decoded_token = auth.verify_id_token(id_token, app=firebase_app)
+        return decoded_token
+    except Exception as e:
+        print(e)
+        raise UnauthorizedClientError()
+
+
 @app.before_request
 def check_user():
     if request.method == "POST":
         if request.content_type != 'application/json':
             raise InvalidContentTypeError()
+
         data = request.get_json()
         if not data:
             raise NoDataProvidedError()
 
-        try:
-            id_token = request.authorization.token
-            decoded_token = auth.verify_id_token(id_token, app=firebase_app)
-            g.token = decoded_token
-        except Exception as e:
-            raise UnauthorizedClientError()
+        g.data = data
+
+        id_token = request.authorization.token if request.authorization else None
+        print(id_token)
+        g.token = verify_id_token(id_token)
+
+    if request.method == "GET":
+        id_token = request.authorization.token if request.authorization else None
+        g.token = verify_id_token(id_token)
 
 
 @app.errorhandler(InvalidContentTypeError)
@@ -91,8 +104,8 @@ def handle_internal_server_error(error):
 
 @app.route("/")
 def home():
-    response = {"message": "API up",
-                "action": "Go to /docs for documentation"}, 200
+    response = jsonify({"message": "API up",
+                        "action": "Go to /docs for documentation"})
     response.status_code = 200
     return response
 

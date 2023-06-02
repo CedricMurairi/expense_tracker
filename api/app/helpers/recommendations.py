@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 
+
 def get_recommendations(data):
     '''
         The model predicts what the user can save based oon their spendings and recommends how much to cut 
