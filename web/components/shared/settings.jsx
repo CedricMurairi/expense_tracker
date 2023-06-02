@@ -2,7 +2,8 @@ import React from "react";
 import { useRouter } from "next/router";
 import { auth } from "firebaseconfig";
 import { useDispatch } from "react-redux";
-import { removeUser } from "store/userSlice";
+import { removeUser } from "@store/userSlice";
+import { clearData } from "@store/dataSlice";
 
 export function SettingsCard() {
   const route = useRouter();
@@ -11,6 +12,7 @@ export function SettingsCard() {
     try {
       await auth.signOut(auth);
       dispatch(removeUser());
+      dispatch(clearData());
       route.push("/login");
     } catch (e) {
       console.log(e);

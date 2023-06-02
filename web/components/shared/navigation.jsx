@@ -17,7 +17,7 @@ export default function NavigationBar({ page, showSettings, setShowSettings }) {
 
   return (
     <div className="flex flex-row max-md:flex-col-reverse gap-10 items-center">
-      <ul className="flex flex-row items-center gap-10">
+      <ul className="flex flex-row items-center max-sm:gap-4 gap-10">
         {Object.keys(routes).map((route, index) => {
           return (
             <li
@@ -40,11 +40,11 @@ export default function NavigationBar({ page, showSettings, setShowSettings }) {
               className="rounded-full"
               width={40}
               height={40}
-              src={user?.photo}
+              src={user?.photoURL}
             />
             <div className="text-right max-md:text-center">
-              <p className="font-bold text-sm">{user.name}</p>
-              <p className="text-xs">{user.email}</p>
+              <p className="font-bold text-sm">{user?.displayName}</p>
+              <p className="text-xs">{user?.email}</p>
             </div>
           </div>
           {showSettings ? <SettingsCard /> : null}

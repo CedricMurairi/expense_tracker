@@ -5,10 +5,12 @@ import PaymentTypes from "@mock/payment_type.json";
 import PaymentTypeSelector from "@components/shared/payment_type";
 import Button from "@components/shared/button";
 import useWindowSize from "@hooks/window_size";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setInfo } from "@store/infoSlice";
+import { setData } from "@store/dataSlice";
 import saveExpenditure from "@data/save_expenditure";
-import getFirebaseClientIdToken from "helpers/get_id_token";
+import getFirebaseClientIdToken from "@helpers/get_id_token";
+import SelectElement from "@components/shared/select";
 
 export default function Form() {
   const [selectedLabel, setSelectedLabel] = useState(0);
@@ -16,6 +18,7 @@ export default function Form() {
   const [amount, setAmount] = useState(0);
   const size = useWindowSize();
   const dispatch = useDispatch();
+  const data_state = useSelector((state) => state.data);
 
   const handleLabelClick = (index) => {
     if (index === selectedLabel) {
@@ -57,11 +60,20 @@ export default function Form() {
     const idToken = await getFirebaseClientIdToken();
 
     const data = {
-      label: selectedLabel,
-      payment: selectedPayment,
+      category: Labels[selectedLabel - 1],
+      payment_type: PaymentTypes[selectedPayment],
       amount: amount,
+      date: new Date().toString(),
     };
+
     const result = await saveExpenditure(data, idToken);
+    // const new_data =
+    //   Number.parseFloat(result.data.amount) + data_state.value.monthly_spending;
+    // dispatch(
+    //   setData({
+    //     monthly_spending: new_data,
+    //   })
+    // );
     console.log(result);
   };
 
@@ -95,10 +107,10 @@ export default function Form() {
       </form>
       {size.width < 1100 ? (
         <div className="flex flex-col items-center">
-          <select
-            defaultValue={selectedLabel}
-            onChange={updateSelectEvent}
-            className="px-5 py-2 my-5 border rounded-md border-gray-400"
+          <SelectElement
+            fieldName="Expenditure"
+            initialValue={selectedLabel}
+            action={updateSelectEvent}
           >
             <option disabled value={0}>
               {" "}
@@ -111,10 +123,10 @@ export default function Form() {
                 </option>
               );
             })}
-          </select>
+          </SelectElement>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2 w-[70%] m-auto">
           {Labels.map((label, index) => {
             return (
               <Label
