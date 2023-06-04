@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Labels from "@mock/labels.json";
 import Label from "@components/shared/label";
 import PaymentTypes from "@mock/payment_type.json";
@@ -7,18 +7,20 @@ import Button from "@components/shared/button";
 import useWindowSize from "@hooks/window_size";
 import { useDispatch, useSelector } from "react-redux";
 import { setInfo } from "@store/infoSlice";
-import { setData } from "@store/dataSlice";
-import saveExpenditure from "@data/save_expenditure";
-import getFirebaseClientIdToken from "@helpers/get_id_token";
+import { updateMonthlySpendings } from "@store/dataSlice";
 import SelectElement from "@components/shared/select";
+import { useAddExpenditureMutation } from "@data/base_api";
+import Pulser from "@components/shared/pulser";
 
 export default function Form() {
   const [selectedLabel, setSelectedLabel] = useState(0);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [amount, setAmount] = useState(0);
+  const amountRef = useRef(null);
   const size = useWindowSize();
   const dispatch = useDispatch();
   const data_state = useSelector((state) => state.data);
+
+  const [addExpenditure, { isLoading }] = useAddExpenditureMutation();
 
   const handleLabelClick = (index) => {
     if (index === selectedLabel) {
@@ -26,7 +28,6 @@ export default function Form() {
       return;
     }
     setSelectedLabel(index);
-    console.log(typeof index);
   };
 
   const updateSelectEvent = (e) => {
@@ -41,12 +42,8 @@ export default function Form() {
     setSelectedPayment(index);
   };
 
-  const updateAmount = (e) => {
-    setAmount(e.target.value);
-  };
-
   const saveExpeditureEntry = async () => {
-    if (amount === 0 || selectedLabel === 0) {
+    if (amountRef.current.value.length === 0 || selectedLabel === 0) {
       dispatch(
         setInfo({
           message: "Amount or label missing",
@@ -57,24 +54,33 @@ export default function Form() {
       return;
     }
 
-    const idToken = await getFirebaseClientIdToken();
+    if (typeof Number.parseFloat(amountRef.current.value) !== "number") {
+      dispatch(
+        setInfo({
+          message: "Amount must be a number",
+          type: "error",
+          show: true,
+        })
+      );
+      return;
+    }
 
     const data = {
       category: Labels[selectedLabel - 1],
       payment_type: PaymentTypes[selectedPayment],
-      amount: amount,
+      amount: amountRef.current.value,
       date: new Date().toString(),
     };
 
-    const result = await saveExpenditure(data, idToken);
-    // const new_data =
-    //   Number.parseFloat(result.data.amount) + data_state.value.monthly_spending;
-    // dispatch(
-    //   setData({
-    //     monthly_spending: new_data,
-    //   })
-    // );
-    console.log(result);
+    addExpenditure(data).then((result) => {
+      const newAmount = result.data.amount;
+      const newMonthlySpendings =
+        data_state.value.monthlySpendings + Number.parseFloat(newAmount);
+      dispatch(updateMonthlySpendings(newMonthlySpendings));
+      amountRef.current.value = "";
+      setSelectedLabel(0);
+      dispatch(setInfo({ message: "Recorded", type: "success", show: true }));
+    });
   };
 
   return (
@@ -96,14 +102,26 @@ export default function Form() {
         </div>
         <div className="w-[50%] flex flex-row items-center justify-center">
           <input
-            onChange={updateAmount}
+            ref={amountRef}
             className="max-sm:px-3 px-5 py-2 my-5 border rounded-md border-gray-400 focus:outline-none"
             type="text"
+            datatype="number"
+            inputMode="numeric"
+            accept="number"
             placeholder="Amount"
           />
           <span className="max-sm:text-lg ml-2 text-2xl">RWF</span>
         </div>
-        <Button action={saveExpeditureEntry} content={"Record"} />
+        <Button
+          action={saveExpeditureEntry}
+          content={
+            isLoading ? (
+              <Pulser primary={"bg-gray-300"} secondary={"bg-white"} />
+            ) : (
+              "Record"
+            )
+          }
+        />
       </form>
       {size.width < 1100 ? (
         <div className="flex flex-col items-center">
