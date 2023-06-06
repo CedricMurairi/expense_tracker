@@ -39,13 +39,13 @@ def verify_id_token(id_token):
         decoded_token = auth.verify_id_token(id_token, app=firebase_app)
         return decoded_token
     except Exception as e:
-        print(e)
+        print(f"ERROR: {e}")
         raise UnauthorizedClientError()
 
 
 @app.before_request
 def check_user():
-    if request.method == "POST":
+    if request.method == "POST" or request.method == "PUT":
         if request.content_type != 'application/json':
             raise InvalidContentTypeError()
 
@@ -56,10 +56,9 @@ def check_user():
         g.data = data
 
         id_token = request.authorization.token if request.authorization else None
-        print(id_token)
         g.token = verify_id_token(id_token)
 
-    if request.method == "GET":
+    if request.method == "GET" or request.method == "DELETE":
         id_token = request.authorization.token if request.authorization else None
         g.token = verify_id_token(id_token)
 
