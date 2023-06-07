@@ -2,7 +2,7 @@ import getFirebaseClientIdToken from "@helpers/get_id_token";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseApi = createApi({
-  refetchOnReconnect: true,
+  // refetchOnReconnect: true,
   reducerPath: "baseApi",
   tagTypes: ["Expenditure"],
   baseQuery: fetchBaseQuery({

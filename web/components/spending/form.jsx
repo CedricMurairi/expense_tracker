@@ -7,7 +7,10 @@ import Button from "@components/shared/button";
 import useWindowSize from "@hooks/window_size";
 import { useDispatch, useSelector } from "react-redux";
 import { setInfo } from "@store/infoSlice";
-import { updateMonthlySpendings } from "@store/dataSlice";
+import {
+  updateMonthlySpendings,
+  addExpenditure as addAnExpenditure,
+} from "@store/dataSlice";
 import SelectElement from "@components/shared/select";
 import { useAddExpenditureMutation } from "@data/base_api";
 import Pulser from "@components/shared/pulser";
@@ -73,9 +76,12 @@ export default function Form() {
     };
 
     addExpenditure(data).then((result) => {
-      const newAmount = result.data.amount;
+      const newAmount = result.data.data.amount;
       const newMonthlySpendings =
         data_state.value.monthlySpendings + Number.parseFloat(newAmount);
+      dispatch(
+        addAnExpenditure({ data: result.data.data, id: result.data.id })
+      );
       dispatch(updateMonthlySpendings(newMonthlySpendings));
       amountRef.current.value = "";
       setSelectedLabel(0);

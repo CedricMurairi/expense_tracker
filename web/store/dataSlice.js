@@ -30,17 +30,32 @@ export const dataSlice = createSlice({
       }
     },
 
+    removeExpenditure: (state, action) => {
+      state.value = {
+        ...state.value,
+        expenditures: state.value.expenditures.filter(
+          (expenditure) => expenditure.id !== action.payload
+        ),
+      };
+    },
+
+    updateExpenditure: (state, action) => {
+      state.value = {
+        ...state.value,
+        expenditures: state.value.expenditures.map((expenditure) => {
+          if (expenditure.id === action.payload.id) {
+            return action.payload;
+          }
+          return expenditure;
+        }),
+      };
+    },
+
     updateMonthlySpendings: (state, action) => {
-      if (state.value === null) {
-        state.value = {
-          monthlySpendings: action.payload,
-        };
-      } else {
-        state.value = {
-          ...state.value,
-          monthlySpendings: action.payload,
-        };
-      }
+      state.value = {
+        ...state.value,
+        monthlySpendings: action.payload,
+      };
     },
 
     clearData: (state) => {
@@ -49,6 +64,12 @@ export const dataSlice = createSlice({
   },
 });
 
-export const { setData, clearData, addExpenditure, updateMonthlySpendings } =
-  dataSlice.actions;
+export const {
+  setData,
+  clearData,
+  addExpenditure,
+  removeExpenditure,
+  updateExpenditure,
+  updateMonthlySpendings,
+} = dataSlice.actions;
 export default dataSlice.reducer;
