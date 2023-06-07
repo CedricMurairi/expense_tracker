@@ -5,17 +5,21 @@ import ExpenditureChart from "@components/insights/expenditure_chart";
 import IncomeSavingsExpenditureChart from "@components/insights/income_expenditure_chart";
 import { useDispatch, useSelector } from "react-redux";
 import { setData } from "@store/dataSlice";
-import getData from "@helpers/get_data";
 import SelectElement from "@components/shared/select";
+import ExpenditureActionDialog from "@components/spending/action_dialog";
 import Months from "@mock/months.json";
 
 export default function DataInsights() {
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data);
+  const data = useSelector((state) => state.data.value);
   const [dataTarget, setDataTarget] = useState(0);
   const [filteredExpenditures, setFilteredExpenditures] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [showActions, setShowActions] = useState(false);
+  const [actionAmount, setActionAmount] = useState(0);
+  const [actionCategory, setActionCategory] = useState("");
+  const [actionId, setActionId] = useState(null);
 
   const colors = [
     "bg-slate-300",
@@ -45,7 +49,7 @@ export default function DataInsights() {
     setCurrentMonth(Number.parseInt(e.target.value));
 
     const filterExpenditures = () => {
-      const expenditures = data.value?.expenditures.filter(
+      const expenditures = data?.expenditures.filter(
         (expenditure) =>
           new Date(expenditure.date).getMonth() ===
           Number.parseInt(e.target.value)
@@ -55,9 +59,7 @@ export default function DataInsights() {
     };
   };
 
-  useEffect(() => {
-    getData(dispatch);
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <MainLayout headerContent={""} page={"Insights"}>
@@ -76,6 +78,7 @@ export default function DataInsights() {
           </button>
         ))}
       </div>
+      {/* TODO: Implement the fiter */}
       <div className="flex flex-row items-center justify-center gap-1">
         <SelectElement
           fieldName="month"
@@ -104,12 +107,24 @@ export default function DataInsights() {
       </div>
       {dataTarget === 0 ? (
         <div className="overflow-auto max-h-[30vh] flex flex-col justify-start m-auto items-center w-[70%]">
-          {data.value?.expenditures.map((expenditure, index) => {
+          {showActions ? (
+            <ExpenditureActionDialog
+              actionAmount={actionAmount}
+              actionCategory={actionCategory}
+              actionId={actionId}
+              setShowActions={setShowActions}
+              setActionCategory={setActionCategory}
+            />
+          ) : null}
+          {data?.expenditures?.map((expenditure, index) => {
             const randColor = colors[Math.floor(Math.random() * colors.length)];
             return (
               <div
                 onDoubleClick={() => {
-                  console.log(expenditure.id);
+                  setShowActions(true);
+                  setActionAmount(expenditure.data.amount);
+                  setActionCategory(expenditure.data.category);
+                  setActionId(expenditure.id);
                 }}
                 key={index}
                 className="border-b w-full pt-1 pb-2 hover:bg-slate-200 hover:shadow-lg hover:shadow-slate-200 hover:px-3 px-2 transition-all"
@@ -140,6 +155,7 @@ export default function DataInsights() {
         </div>
       ) : (
         <div className="grid grid-cols-2 items-center gap-10">
+          {/* TODO: Fix visualization. Implement two more visualizations */}
           <div className="flex flex-col items-center">
             <h3 className="py-5">Expenditures</h3>
             <ExpenditureChart user_data={UserData} />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { continueWithGoogle } from "@data/auth";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
@@ -16,10 +16,11 @@ export default function Login() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user !== undefined && user !== null) {
-        dispatch(setUser(user.providerData[0]));
+        const userData = user.providerData[0];
+        dispatch(setUser(userData));
         dispatch(
           setInfo({
-            message: "You are already logged in",
+            message: "You are logged in",
             type: "info",
             show: true,
           })

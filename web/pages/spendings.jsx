@@ -10,15 +10,19 @@ import Pulser from "@components/shared/pulser";
 export default function Spendings() {
   const dispatch = useDispatch();
   const stateData = useSelector((state) => state.data);
-  const user = useSelector((state) => state.user.value);
-  const { data, currentData, isLoading, isError } = useGetExpendituresQuery();
+  const { data, isLoading, refetch } = useGetExpendituresQuery();
 
   useEffect(() => {
     if (data) {
+      console.log("First: ", data.expenditures);
       const monthlySpendings = getMonthlySpendings(data.expenditures);
+      if (stateData.value?.monthlySpendings !== monthlySpendings) {
+        refetch();
+      }
+      console.log("Second: ", data.expenditures);
       dispatch(setData({ expenditures: data.expenditures, monthlySpendings }));
     }
-  }, [data]);
+  }, []);
 
   return (
     <MainLayout headerContent="Spendings" page="Home">
@@ -30,7 +34,7 @@ export default function Spendings() {
           <span className="mx-2 text-gray-500">{"|"}</span>
           {isLoading ? (
             <span className="px-5">
-              <Pulser primary={"bg-slate-500"} secondary={"bg-slate-400"}/>
+              <Pulser primary={"bg-slate-300"} secondary={"bg-slate-600"} />
             </span>
           ) : (
             <p className=" bold py-1 text-orange-500">
@@ -38,7 +42,7 @@ export default function Spendings() {
             </p>
           )}
         </div>
-        <Form/>
+        <Form />
       </div>
     </MainLayout>
   );
