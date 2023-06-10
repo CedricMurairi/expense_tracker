@@ -24,6 +24,7 @@ export function SettingsCard() {
   };
 
   return (
+    // TODO: Implement full settings card [Edit income, Edit expenditure weight, Subscription, Edit currency, Language, Dark mode, Delete account, Edit recommendation settings {Day of the month show, send via email as report}}]
     <div className="z-50 py-5 px-5 absolute top-14 w-[250px] h-[200px] rounded-lg border-[0.1px] border-gray-200 bg-gray-50 shadow-2xl shadow-slate-300">
       <h4 className="border-b border-gray-200 pb-1">Settings</h4>
       <ul className="pt-2">

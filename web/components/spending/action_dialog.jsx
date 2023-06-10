@@ -88,7 +88,6 @@ export default function ExpenditureActionDialog({
                     console.log(monthlySpendings);
                     console.log(typeof monthlySpendings);
                     dispatch(updateAnExpenditure(updatedResult.data));
-                    dispatch(updateMonthlySpendings(monthlySpendings));
                     setShowActions(false);
                     setEdit(false);
                     dispatch(

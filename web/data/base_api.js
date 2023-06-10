@@ -2,9 +2,8 @@ import getFirebaseClientIdToken from "@helpers/get_id_token";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseApi = createApi({
-  // refetchOnReconnect: true,
   reducerPath: "baseApi",
-  tagTypes: ["Expenditure"],
+  tagTypes: ["Expenditures"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: async (headers, { getState }) => {
@@ -18,7 +17,12 @@ export const baseApi = createApi({
   }),
   endpoints: (builder) => ({
     getExpenditures: builder.query({
-      query: () => ({ url: `/expenditures/`, method: "GET" }),
+      query: () => ({
+        url: `/expenditures/`,
+        method: "GET",
+      }),
+      keepUnusedDataFor: 0,
+      providesTags: ["Expenditures"],
     }),
 
     getExpenditure: builder.query({
@@ -31,6 +35,7 @@ export const baseApi = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Expenditures"],
     }),
 
     updateExpenditure: builder.mutation({
@@ -39,6 +44,7 @@ export const baseApi = createApi({
         method: "PUT",
         body,
       }),
+      invalidatesTags: ["Expenditures"],
     }),
 
     deleteExpenditure: builder.mutation({
@@ -46,6 +52,7 @@ export const baseApi = createApi({
         url: `/expenditures/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Expenditures"],
     }),
   }),
 });

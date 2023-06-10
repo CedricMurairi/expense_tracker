@@ -6,14 +6,17 @@ export default function SelectElement({
   fieldName,
   disabled,
   children,
+  width,
+  reference,
 }) {
   return (
     <select
+      ref={reference}
       disabled={disabled}
       name={fieldName}
-      defaultValue={initialValue}
+      value={initialValue}
       onChange={action}
-      className="px-5 py-2 my-5 border rounded-md border-gray-400"
+      className={`px-5 py-2 my-5 border rounded-md border-gray-400 ${width}`}
     >
       {children}
     </select>

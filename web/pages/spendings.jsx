@@ -22,7 +22,7 @@ export default function Spendings() {
       console.log("Second: ", data.expenditures);
       dispatch(setData({ expenditures: data.expenditures, monthlySpendings }));
     }
-  }, []);
+  }, [data]);
 
   return (
     <MainLayout headerContent="Spendings" page="Home">
