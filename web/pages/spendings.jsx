@@ -14,12 +14,10 @@ export default function Spendings() {
 
   useEffect(() => {
     if (data) {
-      console.log("First: ", data.expenditures);
       const monthlySpendings = getMonthlySpendings(data.expenditures);
       if (stateData.value?.monthlySpendings !== monthlySpendings) {
         refetch();
       }
-      console.log("Second: ", data.expenditures);
       dispatch(setData({ expenditures: data.expenditures, monthlySpendings }));
     }
   }, [data]);

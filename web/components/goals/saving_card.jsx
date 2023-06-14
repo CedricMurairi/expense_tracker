@@ -1,4 +1,5 @@
 import React from "react";
+import formatNumber from "@helpers/format_number";
 
 export default function SavingsCard({
   savingMotif,
@@ -6,18 +7,6 @@ export default function SavingsCard({
   saved,
   allocations,
 }) {
-  function formatNumber(num) {
-    if (num >= 1000 && num < 1000000) {
-      const formatted = (num / 1000).toFixed(1);
-      return formatted.replace(/\.0$/, "") + "k";
-    } else if (num >= 1000000) {
-      const formatted = (num / 1000000).toFixed(1);
-      return formatted.replace(/\.0$/, "") + "m";
-    } else {
-      return num.toString();
-    }
-  }
-
   return (
     <div
       className={`px-2 py-2 flex flex-row justify-between items-center w-[200px] h-[80px] rounded-md border ${

@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import formatNumber from "@helpers/format_number";
 
-export default function ExpenditureChart({ user_data }) {
+export default function ExpenditureChart({ dataEntry }) {
   const get_expenditures = () => {
     let expenditures = [];
-    Object.keys(user_data["expenditures"]).map((expenditure) => {
+    dataEntry.map((expenditure) => {
       expenditures.push({
-        label: expenditure,
-        value: Math.round(user_data["expenditures"][expenditure]),
+        label: expenditure.data.category,
+        value: Math.round(expenditure.data.amount),
       });
     });
 
@@ -61,18 +62,23 @@ export default function ExpenditureChart({ user_data }) {
             d3
               .arc()
               .innerRadius(0)
-              .outerRadius(Math.min(width, height) / 2 - padding + 20)
+              .outerRadius(Math.min(width, height) / 2 - padding + 10)
           );
         svg
           .append("text")
           .attr("class", "label")
           .attr("x", width / 2)
-          .attr("y", height / 2)
-          .text(`${d.data.label}: RWF${d.data.value.toLocaleString()}`)
+          .attr("y", height - 10)
+          .text(
+            `${d.data.label
+              .split(" ")
+              .filter((word) => word != "Expenditure")
+              .join(" ")}: ${formatNumber(d.data.value)} RWF`
+          )
           .attr("text-anchor", "middle")
           .attr("alignment-baseline", "middle")
           .attr("font-size", 15)
-          .attr("font-weight", 800)
+          .attr("font-weight", 600);
       })
       .on("mouseout", function (event, d) {
         d3.select(this).transition().duration(200).attr("d", arc);
@@ -80,7 +86,7 @@ export default function ExpenditureChart({ user_data }) {
       })
       .each(function (d) {
         this._current = d;
-      }) // store the initial angles
+      })
       .transition()
       .duration(1000)
       .attrTween("d", function (d) {
@@ -104,11 +110,11 @@ export default function ExpenditureChart({ user_data }) {
     }
 
     animateChart();
-  }, []);
+  }, [dataEntry]);
 
   return (
     <div>
-      <svg ref={chartRef} width="400" height="300"></svg>
+      <svg ref={chartRef} width="425" height="325"></svg>
     </div>
   );
 }

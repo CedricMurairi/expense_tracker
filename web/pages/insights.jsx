@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import MainLayout from "@components/layout/main_layout";
-import UserData from "@mock/user_two.json";
 import ExpenditureChart from "@components/insights/expenditure_chart";
 import IncomeSavingsExpenditureChart from "@components/insights/income_expenditure_chart";
 import { useSelector } from "react-redux";
@@ -59,7 +58,7 @@ export default function DataInsights() {
   }, [currentMonth]);
 
   return (
-    <MainLayout headerContent={""} page={"Insights"}>
+    <MainLayout headerContent={"Insights"} page={"Insights"}>
       <div className="flex flex-row justify-center transition-all">
         {["Data", "Visualizations"].map((item, index) => (
           <button
@@ -158,17 +157,24 @@ export default function DataInsights() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 items-center gap-10">
-          {/* TODO: Fix visualization. Implement two more visualizations */}
-          <div className="flex flex-col items-center">
-            <h3 className="py-5">Expenditures</h3>
-            <ExpenditureChart user_data={UserData} />
-          </div>
-          <div className="flex flex-col items-center">
-            <h3 className="py-5">Spending/Income/Savings</h3>
-            <IncomeSavingsExpenditureChart user_data={UserData} />
-          </div>
-        </div>
+        <>
+          {filteredExpenditures.length === 0 ? (
+            <p className="text-center">No entry</p>
+          ) : (
+            <div className="flex flex-row max-md:flex-col overflow-scroll scroll-smooth justify-center items-center">
+              <div className="flex flex-col items-center">
+                <h3 className="py-5">Expenditures</h3>
+                <ExpenditureChart dataEntry={filteredExpenditures} />
+              </div>
+              <div className="flex flex-col items-center">
+                <h3 className="py-5">Income | Savings | Spendings</h3>
+                <IncomeSavingsExpenditureChart
+                  expenditures={filteredExpenditures}
+                />
+              </div>
+            </div>
+          )}
+        </>
       )}
     </MainLayout>
   );
