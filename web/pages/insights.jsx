@@ -3,14 +3,12 @@ import MainLayout from "@components/layout/main_layout";
 import UserData from "@mock/user_two.json";
 import ExpenditureChart from "@components/insights/expenditure_chart";
 import IncomeSavingsExpenditureChart from "@components/insights/income_expenditure_chart";
-import { useDispatch, useSelector } from "react-redux";
-import { setData } from "@store/dataSlice";
+import { useSelector } from "react-redux";
 import SelectElement from "@components/shared/select";
 import ExpenditureActionDialog from "@components/spending/action_dialog";
 import Months from "@mock/months.json";
 
 export default function DataInsights() {
-  const dispatch = useDispatch();
   const data = useSelector((state) => state.data.value);
   const [dataTarget, setDataTarget] = useState(0);
   const [filteredExpenditures, setFilteredExpenditures] = useState([]);
@@ -47,19 +45,18 @@ export default function DataInsights() {
 
   const updateCurrentMonth = (e) => {
     setCurrentMonth(Number.parseInt(e.target.value));
-
-    const filterExpenditures = () => {
-      const expenditures = data?.expenditures.filter(
-        (expenditure) =>
-          new Date(expenditure.date).getMonth() ===
-          Number.parseInt(e.target.value)
-      );
-
-      dispatch(setData(expenditures));
-    };
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (data) {
+      setFilteredExpenditures(
+        data?.expenditures.filter(
+          (expenditure) =>
+            new Date(expenditure.data.date).getMonth() === currentMonth
+        )
+      );
+    }
+  }, [currentMonth]);
 
   return (
     <MainLayout headerContent={""} page={"Insights"}>
@@ -78,12 +75,11 @@ export default function DataInsights() {
           </button>
         ))}
       </div>
-      {/* TODO: Implement the fiter */}
       <div className="flex flex-row items-center justify-center gap-1">
         <SelectElement
           fieldName="month"
           initialValue={currentMonth}
-          action={setCurrentMonth}
+          action={updateCurrentMonth}
         >
           {Months.map((month, index) => {
             return (
@@ -101,7 +97,10 @@ export default function DataInsights() {
         >
           <option value={2023}>{2023}</option>
         </SelectElement>
-        <button className="bg-red-50 rounded-md px-1 py-1 border border-gray-400">
+        <button
+          onClick={() => setCurrentMonth(new Date().getMonth())}
+          className="bg-red-50 rounded-md px-1 py-1 border border-gray-400"
+        >
           Clear filter
         </button>
       </div>
@@ -116,42 +115,47 @@ export default function DataInsights() {
               setActionCategory={setActionCategory}
             />
           ) : null}
-          {data?.expenditures?.map((expenditure, index) => {
-            const randColor = colors[Math.floor(Math.random() * colors.length)];
-            return (
-              <div
-                onDoubleClick={() => {
-                  setShowActions(true);
-                  setActionAmount(expenditure.data.amount);
-                  setActionCategory(expenditure.data.category);
-                  setActionId(expenditure.id);
-                }}
-                key={index}
-                className="border-b w-full pt-1 pb-2 hover:bg-slate-200 hover:shadow-lg hover:shadow-slate-200 hover:px-3 px-2 transition-all"
-              >
-                <div className="flex justify-between">
-                  <p className="font-bold">
-                    {expenditure.data.amount}
-                    {data.currency}
-                  </p>
-                  <p className="text-sm">
-                    {new Date(expenditure.data.date).toLocaleString()}
-                  </p>
+          {filteredExpenditures?.length === 0 ? (
+            <p>No entry</p>
+          ) : (
+            filteredExpenditures?.map((expenditure, index) => {
+              const randColor =
+                colors[Math.floor(Math.random() * colors.length)];
+              return (
+                <div
+                  onDoubleClick={() => {
+                    setShowActions(true);
+                    setActionAmount(expenditure.data.amount);
+                    setActionCategory(expenditure.data.category);
+                    setActionId(expenditure.id);
+                  }}
+                  key={index}
+                  className="border-b w-full pt-1 pb-2 hover:bg-slate-200 hover:shadow-lg hover:shadow-slate-200 hover:px-3 px-2 transition-all"
+                >
+                  <div className="flex justify-between">
+                    <p className="font-bold">
+                      {expenditure.data.amount}
+                      {data.currency}
+                    </p>
+                    <p className="text-sm">
+                      {new Date(expenditure.data.date).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p
+                      className={`flex justify-center items-center border rounded-full px-2 text-xs ${randColor}`}
+                    >
+                      {expenditure.data.category
+                        .split(" ")
+                        .filter((word) => word != "Expenditure")
+                        .join(" ")}
+                    </p>
+                    <p className="text-sm">{expenditure.data.payment_type}</p>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <p
-                    className={`flex justify-center items-center border rounded-full px-2 text-xs ${randColor}`}
-                  >
-                    {expenditure.data.category
-                      .split(" ")
-                      .filter((word) => word != "Expenditure")
-                      .join(" ")}
-                  </p>
-                  <p className="text-sm">{expenditure.data.payment_type}</p>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 items-center gap-10">
