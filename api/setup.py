@@ -3,6 +3,7 @@ from app.goals import goals_blueprint
 from app.insights import insights_blueprint
 from app.recommendations import recommendations_blueprint
 from app.expenditures import expenditures_blueprint
+from app.settings import settings_blueprint
 from flask import Flask, render_template, request, g, jsonify
 from flask_cors import CORS
 from firebase import db
@@ -19,6 +20,7 @@ app.register_blueprint(recommendations_blueprint,
 app.register_blueprint(insights_blueprint, url_prefix="/insights")
 app.register_blueprint(goals_blueprint, url_prefix="/goals")
 app.register_blueprint(payments_blueprint, url_prefix="/payments")
+app.register_blueprint(settings_blueprint, url_prefix="/settings")
 app.add_url_rule('/', endpoint='home')
 
 

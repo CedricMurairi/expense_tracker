@@ -1,4 +1,4 @@
-from flask import Blueprint, request, g, jsonify
+from flask import Blueprint, request, g
 from firebase import db
 
 expenditures_blueprint = Blueprint('expenditures', __name__)
@@ -8,7 +8,7 @@ expenditures_blueprint = Blueprint('expenditures', __name__)
 def expenditures():
     uid = g.token["uid"]
     expenditures_collection_ref = db.collection(
-        'expenditures').document(uid).collection('expenditures')
+        'data').document(uid).collection('expenditures')
 
     if request.method == "POST":
         data = g.data
@@ -31,7 +31,7 @@ def expenditures():
 def expenditure(expenditure_id):
     uid = g.token["uid"]
     expenditure_doc_ref = db.collection(
-        'expenditures').document(uid).collection('expenditures').document(expenditure_id)
+        'data').document(uid).collection('expenditures').document(expenditure_id)
 
     if request.method == "GET":
         data = expenditure_doc_ref.get()
