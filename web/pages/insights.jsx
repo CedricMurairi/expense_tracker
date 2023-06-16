@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import SelectElement from "@components/shared/select";
 import ExpenditureActionDialog from "@components/spending/action_dialog";
 import Months from "@mock/months.json";
+import formatNumber from "@helpers/format_number";
 
 export default function DataInsights() {
   const data = useSelector((state) => state.data.value);
@@ -55,7 +56,7 @@ export default function DataInsights() {
         )
       );
     }
-  }, [currentMonth]);
+  }, [currentMonth, data]);
 
   return (
     <MainLayout headerContent={"Insights"} page={"Insights"}>
@@ -133,8 +134,8 @@ export default function DataInsights() {
                 >
                   <div className="flex justify-between">
                     <p className="font-bold">
-                      {expenditure.data.amount}
-                      {data.currency}
+                      {formatNumber(expenditure.data.amount)}{" "}
+                      {data?.settings?.income?.currency}
                     </p>
                     <p className="text-sm">
                       {new Date(expenditure.data.date).toLocaleString()}
@@ -164,12 +165,16 @@ export default function DataInsights() {
             <div className="flex flex-row max-md:flex-col overflow-scroll scroll-smooth justify-center items-center">
               <div className="flex flex-col items-center">
                 <h3 className="py-5">Expenditures</h3>
-                <ExpenditureChart dataEntry={filteredExpenditures} />
+                <ExpenditureChart
+                  dataEntry={filteredExpenditures}
+                  currency={data?.settings?.income?.currency}
+                />
               </div>
               <div className="flex flex-col items-center">
                 <h3 className="py-5">Income | Savings | Spendings</h3>
                 <IncomeSavingsExpenditureChart
                   expenditures={filteredExpenditures}
+                  currency={data?.settings?.income?.currency}
                 />
               </div>
             </div>
