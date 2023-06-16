@@ -7,10 +7,10 @@ import Button from "@components/shared/button";
 import useWindowSize from "@hooks/window_size";
 import { useDispatch, useSelector } from "react-redux";
 import { setInfo } from "@store/infoSlice";
-import {
-  updateMonthlySpendings,
-  addExpenditure as addAnExpenditure,
-} from "@store/dataSlice";
+// import {
+//   updateMonthlySpendings,
+//   addExpenditure as addAnExpenditure,
+// } from "@store/dataSlice";
 import SelectElement from "@components/shared/select";
 import { useAddExpenditureMutation } from "@data/base_api";
 import Pulser from "@components/shared/pulser";
@@ -21,7 +21,7 @@ export default function Form() {
   const amountRef = useRef(null);
   const size = useWindowSize();
   const dispatch = useDispatch();
-  const data_state = useSelector((state) => state.data);
+  const stateData = useSelector((state) => state.data.value);
 
   const [addExpenditure, { isLoading }] = useAddExpenditureMutation();
 
@@ -76,13 +76,13 @@ export default function Form() {
     };
 
     addExpenditure(data).then((result) => {
-      const newAmount = result.data.data.amount;
-      const newMonthlySpendings =
-        data_state.value.monthlySpendings + Number.parseFloat(newAmount);
-      dispatch(
-        addAnExpenditure({ data: result.data.data, id: result.data.id })
-      );
-      dispatch(updateMonthlySpendings(newMonthlySpendings));
+      // const newAmount = result.data.data.amount;
+      // const newMonthlySpendings =
+      //   stateData?.monthlySpendings + Number.parseFloat(newAmount);
+      // dispatch(
+      //   addAnExpenditure({ data: result.data.data, id: result.data.id })
+      // );
+      // dispatch(updateMonthlySpendings(newMonthlySpendings));
       amountRef.current.value = "";
       setSelectedLabel(0);
       dispatch(setInfo({ message: "Recorded", type: "success", show: true }));
@@ -116,7 +116,9 @@ export default function Form() {
             accept="number"
             placeholder="Amount"
           />
-          <span className="max-sm:text-lg ml-2 text-2xl">RWF</span>
+          <span className="max-sm:text-lg ml-2 text-2xl">
+            {stateData?.settings?.income?.currency}
+          </span>
         </div>
         <Button
           action={saveExpeditureEntry}
