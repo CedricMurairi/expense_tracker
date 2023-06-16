@@ -44,6 +44,7 @@ export const dataSlice = createSlice({
         ...state.value,
         expenditures: state.value.expenditures.map((expenditure) => {
           if (expenditure.id === action.payload.id) {
+            console.log("ID are equal");
             return action.payload;
           }
           return expenditure;
@@ -55,6 +56,16 @@ export const dataSlice = createSlice({
       state.value = {
         ...state.value,
         monthlySpendings: action.payload,
+      };
+    },
+
+    updateSettings: (state, action) => {
+      state.value = {
+        ...state.value,
+        settings: {
+          ...state.value.settings,
+          ...action.payload,
+        },
       };
     },
 
@@ -71,5 +82,6 @@ export const {
   removeExpenditure,
   updateExpenditure,
   updateMonthlySpendings,
+  updateSettings,
 } = dataSlice.actions;
 export default dataSlice.reducer;

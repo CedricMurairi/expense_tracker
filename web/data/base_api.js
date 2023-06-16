@@ -62,6 +62,7 @@ export const baseApi = createApi({
         url: `/settings/`,
         method: "GET",
       }),
+      keepUnusedDataFor: 0,
       providesTags: ["Settings"],
     }),
 

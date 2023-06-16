@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
-import {
-  useSetIncomeMutation,
-  useGetDataAndSettingsQuery,
-} from "@data/base_api";
+import { useSetIncomeMutation } from "@data/base_api";
+import { updateSettings } from "@store/dataSlice";
+import { useDispatch } from "react-redux";
 import Pulser from "@components/shared/pulser";
 
-export default function UpdateIncomeForm() {
+export default function UpdateIncomeForm({ incomeData }) {
+  const dispatch = useDispatch();
   const incomeRef = useRef(null);
   const currencyRef = useRef(null);
   const [setIncome, { isLoading }] = useSetIncomeMutation();
@@ -13,14 +13,14 @@ export default function UpdateIncomeForm() {
   const updateIncome = () => {
     if (incomeRef.current.value && currencyRef.current.value) {
       const body = {
-        income: Number.parseInt(incomeRef.current.value),
+        amount: Number.parseInt(incomeRef.current.value),
         currency: currencyRef.current.value,
       };
 
-      setIncome(JSON.stringify(body, null, 2))
+      setIncome(body)
         .then((result) => {
           if (result) {
-            console.log(result);
+            dispatch(updateSettings(result.data));
           }
         })
         .catch((e) => {
@@ -35,9 +35,11 @@ export default function UpdateIncomeForm() {
         className="text-sm text-slate-500 focus:outline-none border border-slate-200 rounded-md mb-1 py-1 px-2"
         type="text"
         placeholder="Monthly Income"
+        defaultValue={incomeData?.amount || ""}
       />
       <select
         ref={currencyRef}
+        defaultValue={incomeData?.currency || "USD"}
         className="text-sm text-slate-500 focus:outline-none border border-slate-200 rounded-md mb-1 py-1 px-2"
       >
         <option value="USD">USD</option>
