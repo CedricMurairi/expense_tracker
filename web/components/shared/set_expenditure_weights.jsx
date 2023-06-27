@@ -26,6 +26,9 @@ export default function SetExpenditureWeights() {
   );
 
   const [currentExpenditure, setCurrentExpenditure] = useState(Labels[0]);
+  const [currentWeight, setCurrentWeight] = useState(
+    expenditureWeights[currentExpenditure]
+  );
   const weigthRef = useRef(null);
   const expenditureRef = useRef(null);
 
@@ -35,6 +38,51 @@ export default function SetExpenditureWeights() {
     );
   }, [expenditureWeights]);
 
+  useEffect(() => {
+    setCurrentWeight(expenditureWeights[currentExpenditure]);
+  }, [currentExpenditure]);
+
+  const updateExpenditureWeights = () => {
+    const expenditure = expenditureRef.current.value;
+    const weight = weigthRef.current.value || 0;
+    if (totalWeight === 100) {
+      console.log(expenditureWeights);
+    }
+
+    if (
+      totalWeight - expenditureWeights[expenditure] + Number.parseInt(weight) <=
+      100
+    ) {
+      setExpenditureWeights((prev) => {
+        return {
+          ...prev,
+          [expenditure]: Number.parseInt(weight),
+        };
+      });
+      return;
+    }
+
+    if (totalWeight + Number.parseInt(weight) === 100) {
+      dispatch(
+        setInfo({
+          message: "You have reached 100%",
+          type: "info",
+          show: true,
+        })
+      );
+    }
+
+    if (totalWeight + Number.parseInt(weight) > 100) {
+      dispatch(
+        setInfo({
+          message: "You cannot exceed 100%",
+          type: "error",
+          show: true,
+        })
+      );
+    }
+  };
+
   return (
     <div className="text-slate-500 flex flex-col">
       <p className="flex flex-row">
@@ -43,33 +91,9 @@ export default function SetExpenditureWeights() {
           className="w-[40%] mr-2 border border-slate-200 rounded-md mb-1 py-0 px-1"
           type="number"
           name="weight"
-          value={expenditureWeights[currentExpenditure]}
-          onChange={() => {
-            const expenditure = expenditureRef.current.value;
-            const weight = weigthRef.current.value;
-            if (totalWeight >= 100) {
-              dispatch(
-                setInfo({
-                  message: "You cannot exceed 100%",
-                  type: "error",
-                  show: true,
-                })
-              );
-              return;
-            }
-            if (totalWeight + Number.parseInt(weight) > 100) {
-              dispatch(
-                setInfo({
-                  message: "You have reached 100%",
-                  type: "info",
-                  show: true,
-                })
-              );
-            }
-            setExpenditureWeights((prev) => {
-              return { ...prev, [expenditure]: Number.parseInt(weight) };
-            });
-          }}
+          // defaultValue={}
+          value={currentWeight}
+          onChange={() => setCurrentWeight(weigthRef.current.value)}
         />
         <span
           className={`${
@@ -106,13 +130,11 @@ export default function SetExpenditureWeights() {
         ))}
       </select>
       <button
-        onClick={() => {
-          console.log(expenditureWeights);
-        }}
+        onClick={() => updateExpenditureWeights()}
         type="button"
         className="text-sm bg-slate-600 text-white rounded-md py-1 px-2"
       >
-        Update
+        {totalWeight === 100 ? "Update Settings" : "Add"}
       </button>
     </div>
   );
