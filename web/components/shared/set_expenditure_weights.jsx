@@ -1,24 +1,34 @@
 import React, { useRef, useState, useEffect } from "react";
 import Labels from "@mock/labels.json";
 import { setInfo } from "@store/infoSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useSetWeightsMutation } from "@data/base_api";
+import Pulser from "./pulser";
 
-export default function SetExpenditureWeights() {
+export default function SetExpenditureWeights({ weights }) {
   const dispatch = useDispatch();
+  console.log(weights);
+  const [setWeights, { isLoading }] = useSetWeightsMutation();
   const [expenditureWeights, setExpenditureWeights] = useState({
-    "Food Expenditure": 0,
-    "Restaurant and Hotels Expenditure": 0,
-    "Alcoholic Beverages Expenditure": 0,
-    "Tobacco Expenditure": 0,
-    "Clothing and Other Wear Expenditure": 0,
-    "Housing and Water Expenditure": 0,
-    "Medical Care Expenditure": 0,
-    "Transportation Expenditure": 0,
-    "Communication Expenditure": 0,
-    "Education and Learning Expenditure": 0,
-    "Miscellaneous Expenditure": 0,
-    "Special Occasions Expenditure": 0,
-    "Gardening Expenditure": 0,
+    "Food Expenditure": weights["Food Expenditure"] || 0,
+    "Restaurant and Hotels Expenditure":
+      weights["Restaurant and Hotels Expenditure"] || 0,
+    "Alcoholic Beverages Expenditure":
+      weights["Alcoholic Beverages Expenditure"] || 0,
+    "Tobacco Expenditure": weights["Tobacco Expenditure"] || 0,
+    "Clothing and Other Wear Expenditure":
+      weights["Clothing and Other Wear Expenditure"] || 0,
+    "Housing and Water Expenditure":
+      weights["Housing and Water Expenditure"] || 0,
+    "Medical Care Expenditure": weights["Medical Care Expenditure"] || 0,
+    "Transportation Expenditure": weights["Transportation Expenditure"] || 0,
+    "Communication Expenditure": weights["Communication Expenditure"] || 0,
+    "Education and Learning Expenditure":
+      weights["Education and Learning Expenditure"] || 0,
+    "Miscellaneous Expenditure": weights["Miscellaneous Expenditure"] || 0,
+    "Special Occasions Expenditure":
+      weights["Special Occasions Expenditure"] || 0,
+    "Gardening Expenditure": weights["Gardening Expenditure"] || 0,
   });
 
   const [totalWeight, setTotalWeight] = useState(
@@ -46,7 +56,22 @@ export default function SetExpenditureWeights() {
     const expenditure = expenditureRef.current.value;
     const weight = weigthRef.current.value || 0;
     if (totalWeight === 100) {
-      console.log(expenditureWeights);
+      const body = {
+        weights: expenditureWeights,
+      };
+
+      setWeights(body).then((result) => {
+        if (result) {
+          dispatch(
+            setInfo({
+              message: "Expenditure weights updated",
+              type: "success",
+              show: true,
+            })
+          );
+          console.log(result);
+        }
+      });
     }
 
     if (
@@ -91,7 +116,6 @@ export default function SetExpenditureWeights() {
           className="w-[40%] mr-2 border border-slate-200 rounded-md mb-1 py-0 px-1"
           type="number"
           name="weight"
-          // defaultValue={}
           value={currentWeight}
           onChange={() => setCurrentWeight(weigthRef.current.value)}
         />
@@ -117,16 +141,7 @@ export default function SetExpenditureWeights() {
         {Labels.map((label, index) => (
           <option type="text" key={index}>
             {label}
-            {/* {" -- "} */}
-            {/* {expenditureWeights[label]} */}
-            {/* {"%"} */}
           </option>
-          // <option type="text" key={index}>
-          //   {label
-          //     .split(" ")
-          //     .filter((word) => word != "Expenditure")
-          //     .join(" ")}
-          // </option>
         ))}
       </select>
       <button
@@ -134,7 +149,13 @@ export default function SetExpenditureWeights() {
         type="button"
         className="text-sm bg-slate-600 text-white rounded-md py-1 px-2"
       >
-        {totalWeight === 100 ? "Update Settings" : "Add"}
+        {isLoading ? (
+          <Pulser primary={"bg-gray-300"} secondary={"bg-white"} />
+        ) : totalWeight === 100 ? (
+          "Update"
+        ) : (
+          "Add"
+        )}
       </button>
     </div>
   );
