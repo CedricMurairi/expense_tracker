@@ -1,38 +1,79 @@
-import React, { useState } from "react";
-// import { useForm } from "react-hook-form";
-// import Labels from "@mock/labels.json";
-// import Label from "@components/shared/label";
-// import PaymentTypes from "@mock/payment_type.json";
-// import PaymentTypeSelector from "@components/shared/payment_type";
+import React, { useState, useRef } from "react";
 import Button from "@components/shared/button";
+import { useDispatch } from "react-redux";
+import { setInfo } from "@store/infoSlice";
+import { useSetGoalMutation } from "@data/base_api";
+import Pulser from "@components/shared/pulser";
 
 export default function Form() {
-//   const [selectedLabel, setSelectedLabel] = useState(null);
-//   const [selectedPayment, setSelectedPayment] = useState(null);
+  const motifRef = useRef();
+  const amountRef = useRef();
+  const installmentRef = useRef();
+  const dispatch = useDispatch();
 
-//   const handleLabelClick = (index) => {
-//     setSelectedLabel(index);
-//   };
+  const [setGoal, { isLoading }] = useSetGoalMutation();
 
-//   const handlePaymentTypeClick = (index) => {
-//     setSelectedPayment(index);
-//   };
+  const [isPayingIntallments, setIsPayingInstallments] = useState(false)
+
+  const addGoal = () => {
+    let body = {};
+    if (isPayingIntallments) {
+      body = {
+        motif: motifRef.current.value,
+        amount: amountRef.current.value,
+        installments: isPayingIntallments,
+        installments_count: installmentRef.current.value,
+        payments: [],
+        set: new Date().toString(),
+        paid: false
+      }
+    } else {
+      body = {
+        motif: motifRef.current.value,
+        amount: amountRef.current.value,
+        set: new Date().toString(),
+        paid: false
+      }
+    }
+
+    setGoal(body).then((result) => {
+      dispatch(setInfo({
+        message: "Goal recorded",
+        type: "success",
+        show: true,
+      }))
+
+      // dispatch(setGoal(result));
+    });
+  }
+
   return (
     <div>
       <form className="flex flex-col justify-center items-center mb-10">
         <input
+          ref={motifRef}
           className="px-5 py-2 border mb-1 mt-5 rounded-md border-gray-400"
           type="text"
           placeholder="Saving Motif"
         />
-        <div className="w-fit flex flex-row items-center justify-center">
-          <input
-            className="px-5 py-2 mt-1 mb-5 border rounded-md border-gray-400"
-            type="text"
-            placeholder="Amount"
-          />
+        <input
+          ref={amountRef}
+          className="w-fit px-5 py-2 mt-1 mb-2 border rounded-md border-gray-400"
+          type="text"
+          placeholder="Amount"
+        />
+        <div className="flex justify-center items-center gap-2">
+          <label className={`${!isPayingIntallments ? "text-gray-400" : "text-gray-700"}`} htmlFor="toggle-switch">Pay in installments</label>
+          <input type="checkbox" name="toggle-switch" id="toggle-switch" defaultValue={isPayingIntallments} onClick={() => setIsPayingInstallments(!isPayingIntallments)} />
         </div>
-        <Button content={"Record"} />
+        <input
+          disabled={!isPayingIntallments}
+          ref={installmentRef}
+          className="w-fit px-5 py-2 mt-1 mb-5 border rounded-md border-gray-400"
+          type="text"
+          placeholder="How many?"
+        />
+        <Button content={!isLoading ? "Record" : <Pulser primary={"bg-gray-300"} secondary={"bg-white"} />} action={() => addGoal()} />
       </form>
     </div>
   );
