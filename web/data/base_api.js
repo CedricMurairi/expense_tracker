@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["Expenditures", "Settings"],
+  tagTypes: ["Expenditures", "Settings", "Goals"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: async (headers, { getState }) => {
@@ -74,6 +74,34 @@ export const baseApi = createApi({
       }),
       invalidatesTags: ["Settings"],
     }),
+
+    setWeights: builder.mutation({
+      query: (body) => ({
+        url: `/settings/weights`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Settings"],
+    }),
+
+    // GOALS AND SAVINGS
+    getGoals: builder.query({
+      query: () => ({
+        url: '/goals/',
+        method: "GET",
+      }),
+      keepUnusedDataFor: 0,
+      providesTags: ["Goals"],
+    }),
+
+    setGoal: builder.mutation({
+      query: (body) => ({
+        url: "/goals/",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Goals"],
+    }),
   }),
 });
 
@@ -85,4 +113,7 @@ export const {
   useUpdateExpenditureMutation,
   useGetDataAndSettingsQuery,
   useSetIncomeMutation,
+  useSetWeightsMutation,
+  useSetGoalMutation,
+  useGetGoalsQuery
 } = baseApi;

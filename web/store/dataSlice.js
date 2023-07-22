@@ -44,7 +44,6 @@ export const dataSlice = createSlice({
         ...state.value,
         expenditures: state.value.expenditures.map((expenditure) => {
           if (expenditure.id === action.payload.id) {
-            console.log("ID are equal");
             return action.payload;
           }
           return expenditure;
@@ -66,6 +65,31 @@ export const dataSlice = createSlice({
           ...state.value.settings,
           ...action.payload,
         },
+      };
+    },
+
+    setGoal: (state, action) => {
+      if (state.value === null) {
+        state.value = {
+          goals: [action.payload],
+        };
+      } else {
+        state.value = {
+          ...state.value,
+          goals: [...state.value.goals, action.payload],
+        };
+      }
+    },
+
+    updateGoal: (state) => {
+      state.value = {
+        ...state.value,
+        goals: state.value.goals.map((goal) => {
+          if (goal.id === action.payload.id) {
+            return action.payload;
+          }
+          return goal;
+        }),
       };
     },
 

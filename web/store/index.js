@@ -10,7 +10,7 @@ import { setupListeners } from "@reduxjs/toolkit/dist/query";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "info", "data"],
+  whitelist: ["user", "data"],
 };
 
 const reducers = combineReducers({
