@@ -13,17 +13,34 @@ export default function Form() {
 
   const [setGoal, { isLoading }] = useSetGoalMutation();
 
-  const [isPayingIntallments, setIsPayingInstallments] = useState(false)
+  const [isPayingInstallments, setIsPayingInstallments] = useState(false)
+
+  function generatePayments(installmentCount) {
+    const payments = [];
+
+    for (let i = 0; i < installmentCount; i++) {
+      const installment = {
+        installmentNumber: i,
+        amountPaid: 0,
+        paymentDate: null,
+        paymentDue: new Date().getMonth() + i,
+        paid: false,
+      };
+      payments.push(installment);
+    }
+
+    return payments;
+  }
 
   const addGoal = () => {
     let body = {};
-    if (isPayingIntallments) {
+    if (isPayingInstallments) {
       body = {
         motif: motifRef.current.value,
         amount: amountRef.current.value,
-        installments: isPayingIntallments,
+        installments: isPayingInstallments,
         installments_count: installmentRef.current.value,
-        payments: [],
+        payments: generatePayments(installmentRef.current.value),
         set: new Date().toString(),
         paid: false
       }
@@ -42,8 +59,6 @@ export default function Form() {
         type: "success",
         show: true,
       }))
-
-      // dispatch(setGoal(result));
     });
   }
 
@@ -63,11 +78,11 @@ export default function Form() {
           placeholder="Amount"
         />
         <div className="flex justify-center items-center gap-2">
-          <label className={`${!isPayingIntallments ? "text-gray-400" : "text-gray-700"}`} htmlFor="toggle-switch">Pay in installments</label>
-          <input type="checkbox" name="toggle-switch" id="toggle-switch" defaultValue={isPayingIntallments} onClick={() => setIsPayingInstallments(!isPayingIntallments)} />
+          <label className={`${!isPayingInstallments ? "text-gray-400" : "text-gray-700"}`} htmlFor="toggle-switch">Pay in installments</label>
+          <input type="checkbox" name="toggle-switch" id="toggle-switch" defaultValue={isPayingInstallments} onClick={() => setIsPayingInstallments(!isPayingInstallments)} />
         </div>
         <input
-          disabled={!isPayingIntallments}
+          disabled={!isPayingInstallments}
           ref={installmentRef}
           className="w-fit px-5 py-2 mt-1 mb-5 border rounded-md border-gray-400"
           type="text"

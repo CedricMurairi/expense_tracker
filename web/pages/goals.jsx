@@ -24,7 +24,6 @@ export default function Goals() {
         <Form />
         <div className="flex flex-wrap justify-center gap-2">
           {goals.map((goal) => {
-            console.log(goal)
             return (
               <SavingsCard
                 key={goal.id}
@@ -33,6 +32,8 @@ export default function Goals() {
                 savingMotif={goal.data.motif}
                 saved={goal.data.paid}
                 installments={goal.data.installments}
+                payments={goal.data.payments || null}
+                date_set={goal.data.set}
               />
             );
           })}

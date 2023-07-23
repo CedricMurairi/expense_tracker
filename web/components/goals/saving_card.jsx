@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import formatNumber from "@helpers/format_number";
+import { useSelector } from "react-redux";
 
 export default function SavingsCard({
   savingMotif,
@@ -7,9 +8,29 @@ export default function SavingsCard({
   saved,
   installments_count,
   installments,
-  payments
+  payments,
+  date_set,
 }) {
-  const [showMoreDetails, setShowModeDetails] = useState(false)
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
+  const state = useSelector((state) => state.data.value);
+
+  const getTotalPayment = () => {
+    const totalPaidAmount = payments !== null ? payments
+      .filter((payment) => payment.paid === true)
+      .reduce((acc, curr) => acc + curr.amountPaid, 0) : 0;
+
+    return totalPaidAmount;
+  }
+
+  function chopSentence(text, characterLimit) {
+    if (text.length <= characterLimit) {
+      return text;
+    } else {
+      return text.slice(0, characterLimit - 3) + "...";
+    }
+  }
+
+  const progress = (getTotalPayment() / amount) * 100;
 
   return (
     <div
@@ -18,26 +39,31 @@ export default function SavingsCard({
     >
       {showMoreDetails ?
         <div className="relative bg-white px-2 py-2 w-full">
-          <button onClick={() => setShowModeDetails(false)} className="absolute right-2 top-0 text-xs underline">Close</button>
-          <h3>{formatNumber(payments)} / {formatNumber(amount)}</h3>
+          <button onClick={() => setShowMoreDetails(false)} className="absolute right-1 top-0 text-xs underline">Close</button>
+          <h3 className="text-xs">{formatNumber(getTotalPayment())} / {state?.settings?.income?.currency}{formatNumber(amount)}</h3>
           <div className="flex justify-start items-center relative w-[90%] bg-gray-300 h-[5px] rounded-lg">
-            <div className="bg-green-500 w-[90%] h-[5px] rounded-lg absolute"></div>
+            <div className="bg-green-500 h-[5px] rounded-lg absolute" style={{ width: `${progress}%` }}></div>
           </div>
-          <div>
-            {/* {Object.create() installments .maps((installment) => {
-              <span>{installment}</span>
-            })} */}
+          <div className="flex overflow-scroll gap-1 w-full justify-between mt-2">
+            {
+              payments.map((installment) =>
+                <div className="flex flex-col text-xs justify-start items-center">
+                  <button className={`px-2 py-1 font-bold rounded-lg ${installment.paid ? "bg-green-300" : installment.paymentDue < new Date().getMonth() ? "bg-red-300" : "bg-gray-300"}`}>{formatNumber(installment.amountPaid)}</button>
+                </div>
+              )
+            }
           </div>
         </div> :
         <>
           <div className="flex flex-col justify-start h-full">
-            <h3 className="text-sm">{savingMotif}</h3>
-            <p className="text-xl font-bold mt-1">
-              {"RWF"}
+            <h3 className="text-sm">{chopSentence(savingMotif, 15)}</h3>
+            <p className="text-lg font-bold">
+              {state?.settings?.income?.currency}
               {installments_count > 1
                 ? formatNumber(amount / installments_count)
                 : formatNumber(amount)}
             </p>
+            <p className="w-fit bg-indigo-100 rounded-lg px-1 text-[10px]">{new Date(date_set).toLocaleDateString()}</p>
           </div>
           <div className="flex flex-col justify-between items-end h-full">
             {saved ?
@@ -51,7 +77,7 @@ export default function SavingsCard({
               </button>
             }
             {installments ?
-              <button onClick={() => setShowModeDetails(true)} className="underline text-sm">See more</button>
+              <button onClick={() => setShowMoreDetails(true)} className="underline text-sm">See more</button>
               : <></>
             }
           </div>
