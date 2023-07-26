@@ -10,6 +10,7 @@ export default function SavingsCard({
   installments,
   payments,
   date_set,
+  action,
 }) {
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const state = useSelector((state) => state.data.value);
@@ -46,8 +47,8 @@ export default function SavingsCard({
           </div>
           <div className="flex overflow-scroll gap-1 w-full justify-between mt-2">
             {
-              payments.map((installment) =>
-                <div className="flex flex-col text-xs justify-start items-center">
+              payments.map((installment, index) =>
+                <div key={index} className="flex flex-col text-xs justify-start items-center">
                   <button className={`px-2 py-1 font-bold rounded-lg ${installment.paid ? "bg-green-300" : installment.paymentDue < new Date().getMonth() ? "bg-red-300" : "bg-gray-300"}`}>{formatNumber(installment.amountPaid)}</button>
                 </div>
               )
@@ -55,7 +56,7 @@ export default function SavingsCard({
           </div>
         </div> :
         <>
-          <div className="flex flex-col justify-start h-full">
+          <div className="flex flex-col justify-between h-full">
             <h3 className="text-sm">{chopSentence(savingMotif, 15)}</h3>
             <p className="text-lg font-bold">
               {state?.settings?.income?.currency}
@@ -72,7 +73,7 @@ export default function SavingsCard({
               >
                 Saved
               </span> :
-              <button className="text-xs underline bg-gray-400 px-2 py-1 rounded-sm">
+              <button onClick={() => action(true)} className="text-xs underline bg-gray-400 px-2 py-1 rounded-sm">
                 Save Now
               </button>
             }
