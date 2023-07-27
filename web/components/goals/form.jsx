@@ -13,7 +13,7 @@ export default function Form() {
 
   const [setGoal, { isLoading }] = useSetGoalMutation();
 
-  const [isPayingInstallments, setIsPayingInstallments] = useState(false)
+  const [isPayingInstallments, setIsPayingInstallments] = useState(false);
 
   function generatePayments(installmentCount) {
     const payments = [];
@@ -21,7 +21,7 @@ export default function Form() {
     for (let i = 0; i < installmentCount; i++) {
       const installment = {
         installmentNumber: i,
-        amountPaid: 0,
+        amountPaid: amountRef.current.value / installmentCount,
         paymentDate: null,
         paymentDue: new Date().getMonth() + i,
         paid: false,
@@ -42,6 +42,7 @@ export default function Form() {
         installments_count: installmentRef.current.value,
         payments: generatePayments(installmentRef.current.value),
         set: new Date().toString(),
+        paymentDate: null,
         paid: false
       }
     } else {
@@ -49,7 +50,8 @@ export default function Form() {
         motif: motifRef.current.value,
         amount: amountRef.current.value,
         set: new Date().toString(),
-        paid: false
+        paid: false,
+        paymentDate: null,
       }
     }
 
@@ -59,6 +61,11 @@ export default function Form() {
         type: "success",
         show: true,
       }))
+
+      motifRef.current.value = "";
+      amountRef.current.value = "";
+      installmentRef.current.value = "";
+      setIsPayingInstallments(false);
     });
   }
 
