@@ -93,6 +93,28 @@ export const dataSlice = createSlice({
       };
     },
 
+    setCurrentGoal: (state, action) => {
+      state.value = {
+        ...state.value,
+        currentGoal: action.payload,
+      };
+    },
+
+    setCurrentInstallment: (state, action) => {
+      state.value = {
+        ...state.value,
+        currentInstallment: action.payload,
+      };
+    },
+
+    clearCurrentGoalInfo: (state) => {
+      state.value = {
+        ...state.value,
+        currentGoal: null,
+        currentInstallment: null,
+      };
+    },
+
     clearData: (state) => {
       state.value = null;
     },
@@ -102,10 +124,13 @@ export const dataSlice = createSlice({
 export const {
   setData,
   clearData,
+  clearCurrentGoalInfo,
   addExpenditure,
   removeExpenditure,
   updateExpenditure,
   updateMonthlySpendings,
   updateSettings,
+  setCurrentGoal,
+  setCurrentInstallment,
 } = dataSlice.actions;
 export default dataSlice.reducer;
