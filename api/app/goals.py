@@ -24,3 +24,25 @@ def goals():
         for goal in goals:
             data.append({"data": goal.to_dict(), "id": goal.id})
         return data, 200
+
+
+@goals_blueprint.route('/<goal_id>', methods=['PUT'])
+async def update_goal(goal_id):
+    uid = g.token["uid"]
+    data = g.data
+    goals_collection_ref = db.collection(
+        "data").document(uid).collection("goals")
+    goal_ref = goals_collection_ref.document(goal_id)
+
+    if data["is_installment"]:
+        await goal_ref.update({
+            f"payments.{data['installmentNumber']}.paid": data['paid'],
+            f"payments.{data['installmentNumber']}.paymentDate": data['paymentDate']
+        })
+    else:
+        await goal_ref.update({
+            "paid": data['paid'],
+            "paymentDate": data['paymentDate']
+        })
+
+    return {"data": data, "id": goal_ref.id}

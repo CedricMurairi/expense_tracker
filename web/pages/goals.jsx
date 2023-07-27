@@ -6,6 +6,7 @@ import { setData } from "@store/dataSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useGetGoalsQuery } from "@data/base_api";
 import Pulser from "@components/shared/pulser";
+import { useUpdateGoalMutation } from "@data/base_api";
 
 export default function Goals() {
   const dispatch = useDispatch();
@@ -18,11 +19,48 @@ export default function Goals() {
   const [showInfo, setShowInfo] = useState(false);
   const [showTip, setShowTip] = useState(false);
 
+  const [updateGoal, { isLoading: updateGoalIsLoading }] = useUpdateGoalMutation()
+
   useEffect(() => {
     if (data) {
       dispatch(setData({ goals: data }))
     }
   }, [data])
+
+  const saveGoal = () => {
+    const currentGoal = state.currentGoal;
+    console.log(currentGoal);
+    let body;
+    if (currentGoal.data.installments) {
+      const currentInstallment = currentGoal.data.payments.find((installment) => installment.paymentDue === new Date().getMonth() && installment.paid === false);
+      if (currentInstallment) {
+        body = {
+          ...currentInstallment,
+          paid: true,
+          paymentDate: new Date().toString(),
+          is_installment: true
+        };
+
+        console.log(body);
+
+        // useUpdateGoal(body);        
+        // dispatch(setData({ currentGoal: newGoal }));
+      }
+    } else {
+      body = {
+        paid: true,
+        paymentDate: new Date().toString(),
+        is_installment: false
+      };
+
+      console.log(body);
+    }
+
+    updateGoal({ id: currentGoal.id, body }).then((result) => {
+      console.log(result);
+      // dispatch(setData({ currentGoal: result }));
+    });
+  };
 
   return (
     <MainLayout headerContent={"Saving Goals"} page={"Goals"}>
@@ -56,11 +94,15 @@ export default function Goals() {
           {payWithMono &&
             <div className="z-10 flex flex-col gap-1 justify-center">
               <input type="tel" className="outline-none border border-gray-200 rounded-md py-1 px-2" placeholder="Phone number" />
-              <input type="text" className="outline-none border border-gray-200 rounded-md py-1 px-2" value={200000} />
+              <input type="text" disabled={true} className="cursor-not-allowed opacity-70 outline-none border border-gray-200 rounded-md py-1 px-2" value={(state.currentGoal.data.installments ? state.currentGoal.data.amount / state.currentGoal.data.installments_count : state.currentGoal.data.amount) + state.settings.income.currency} />
               <button
+                onClick={() => {
+                  saveGoal();
+                  setShowPaymentForm(false);
+                }}
                 onMouseEnter={() => setShowTip(true)}
                 onMouseLeave={() => setShowTip(false)}
-                className="text-sm px-2 py-1 hover:bg-gray-100 border border-gray-200 rounded-lg relative"
+                className="text-sm px-2 py-2 hover:bg-gray-100 border border-gray-200 rounded-lg relative"
               >
                 Save Now
                 {showTip &&
@@ -87,13 +129,8 @@ export default function Goals() {
                 <SavingsCard
                   action={setShowPaymentForm}
                   key={goal?.id}
-                  amount={goal?.data.amount}
-                  installments_count={goal?.data.installments_count}
-                  savingMotif={goal?.data.motif}
-                  saved={goal?.data.paid}
-                  installments={goal?.data.installments}
-                  payments={goal?.data.payments || null}
-                  date_set={goal?.data.set}
+                  goal={goal?.data}
+                  id={goal?.id}
                 />
               );
             })}

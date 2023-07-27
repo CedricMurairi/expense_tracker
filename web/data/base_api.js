@@ -102,6 +102,15 @@ export const baseApi = createApi({
       }),
       invalidatesTags: ["Goals"],
     }),
+
+    updateGoal: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/goals/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Goals"],
+    }),
   }),
 });
 
@@ -115,5 +124,6 @@ export const {
   useSetIncomeMutation,
   useSetWeightsMutation,
   useSetGoalMutation,
-  useGetGoalsQuery
+  useGetGoalsQuery,
+  useUpdateGoalMutation,
 } = baseApi;
