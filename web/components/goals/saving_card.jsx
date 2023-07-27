@@ -1,22 +1,19 @@
 import React, { useState } from "react";
 import formatNumber from "@helpers/format_number";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentGoal, setCurrentInstallment } from "@store/dataSlice";
 
 export default function SavingsCard({
-  savingMotif,
-  amount,
-  saved,
-  installments_count,
-  installments,
-  payments,
-  date_set,
   action,
+  goal,
+  id,
 }) {
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const state = useSelector((state) => state.data.value);
+  const dispatch = useDispatch();
 
   const getTotalPayment = () => {
-    const totalPaidAmount = payments !== null ? payments
+    const totalPaidAmount = goal.installments ? goal.payments
       .filter((payment) => payment.paid === true)
       .reduce((acc, curr) => acc + curr.amountPaid, 0) : 0;
 
@@ -31,23 +28,23 @@ export default function SavingsCard({
     }
   }
 
-  const progress = (getTotalPayment() / amount) * 100;
+  const progress = (getTotalPayment() / goal.amount) * 100;
 
   return (
     <div
-      className={`px-2 py-2 flex flex-row justify-between items-center w-[200px] max-sm:w-[80%] h-[80px] rounded-md border ${saved ? "border-green-700 border-2" : "border-gray-600"
+      className={`px-2 py-2 flex flex-row justify-between items-center w-[200px] max-sm:w-[80%] h-[80px] rounded-md border ${goal.saved ? "border-green-700 border-2" : "border-gray-600"
         }`}
     >
       {showMoreDetails ?
         <div className="relative bg-white px-2 py-2 w-full">
           <button onClick={() => setShowMoreDetails(false)} className="absolute right-1 top-0 text-xs underline">Close</button>
-          <h3 className="text-xs">{formatNumber(getTotalPayment())} / {state?.settings?.income?.currency}{formatNumber(amount)}</h3>
+          <h3 className="text-xs">{formatNumber(getTotalPayment())} / {state?.settings?.income?.currency}{formatNumber(goal.amount)}</h3>
           <div className="flex justify-start items-center relative w-[90%] bg-gray-300 h-[5px] rounded-lg">
             <div className="bg-green-500 h-[5px] rounded-lg absolute" style={{ width: `${progress}%` }}></div>
           </div>
           <div className="flex overflow-scroll gap-1 w-full justify-between mt-2">
             {
-              payments.map((installment, index) =>
+              goal.payments.map((installment, index) =>
                 <div key={index} className="flex flex-col text-xs justify-start items-center">
                   <button className={`px-2 py-1 font-bold rounded-lg ${installment.paid ? "bg-green-300" : installment.paymentDue < new Date().getMonth() ? "bg-red-300" : "bg-gray-300"}`}>{formatNumber(installment.amountPaid)}</button>
                 </div>
@@ -57,27 +54,31 @@ export default function SavingsCard({
         </div> :
         <>
           <div className="flex flex-col justify-between h-full">
-            <h3 className="text-sm">{chopSentence(savingMotif, 15)}</h3>
+            <h3 className="text-sm">{chopSentence(goal.motif, 15)}</h3>
             <p className="text-lg font-bold">
               {state?.settings?.income?.currency}
-              {installments_count > 1
-                ? formatNumber(amount / installments_count)
-                : formatNumber(amount)}
+              {goal.installments_count > 1
+                ? formatNumber(goal.amount / goal.installments_count)
+                : formatNumber(goal.amount)}
             </p>
-            <p className="w-fit bg-indigo-100 rounded-lg px-1 text-[10px]">{new Date(date_set).toLocaleDateString()}</p>
+            <p className="w-fit bg-indigo-100 rounded-lg px-1 text-[10px]">{new Date(goal.set).toLocaleDateString()}</p>
           </div>
           <div className="flex flex-col justify-between items-end h-full">
-            {saved ?
+            {goal.saved ?
               <span
                 className="bg-green-500 text-center rounded-sm px-2 py-1 text-xs"
               >
                 Saved
               </span> :
-              <button onClick={() => action(true)} className="text-xs underline bg-gray-400 px-2 py-1 rounded-sm">
+              <button onClick={() => {
+                action(true);
+                dispatch(setCurrentGoal({ id: id, data: goal }));
+              }}
+                className="text-xs underline bg-gray-400 px-2 py-1 rounded-sm">
                 Save Now
               </button>
             }
-            {installments ?
+            {goal.installments ?
               <button onClick={() => setShowMoreDetails(true)} className="underline text-sm">See more</button>
               : <></>
             }
