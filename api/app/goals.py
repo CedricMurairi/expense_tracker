@@ -27,20 +27,33 @@ def goals():
 
 
 @goals_blueprint.route('/<goal_id>', methods=['PUT'])
-async def update_goal(goal_id):
+def update_goal(goal_id):
     uid = g.token["uid"]
     data = g.data
     goals_collection_ref = db.collection(
         "data").document(uid).collection("goals")
     goal_ref = goals_collection_ref.document(goal_id)
 
+    # Get the existing payments array first
+    goal_data = goal_ref.get().to_dict()
+    payments = goal_data.get("payments", [])
+
     if data["is_installment"]:
-        await goal_ref.update({
-            f"payments.{data['installmentNumber']}.paid": data['paid'],
-            f"payments.{data['installmentNumber']}.paymentDate": data['paymentDate']
-        })
+        installment_number = data['installmentNumber']
+
+        # Update the specific installment's fields
+        if 0 <= installment_number < len(payments):
+            payments[installment_number]["paid"] = data['paid']
+            payments[installment_number]["paymentDate"] = data['paymentDate']
+
+            # Update the entire "payments" array with the modified version
+            goal_ref.update({"payments": payments})
+
+        print("Payment-Count: ", payments.count(True))
+
     else:
-        await goal_ref.update({
+        # If it's not an installment, update the main fields directly
+        goal_ref.update({
             "paid": data['paid'],
             "paymentDate": data['paymentDate']
         })

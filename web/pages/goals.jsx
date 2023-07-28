@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useGetGoalsQuery } from "@data/base_api";
 import Pulser from "@components/shared/pulser";
 import { useUpdateGoalMutation } from "@data/base_api";
+import { setInfo } from "@store/infoSlice";
 
 export default function Goals() {
   const dispatch = useDispatch();
@@ -29,22 +30,19 @@ export default function Goals() {
 
   const saveGoal = () => {
     const currentGoal = state.currentGoal;
-    console.log(currentGoal);
     let body;
     if (currentGoal.data.installments) {
       const currentInstallment = currentGoal.data.payments.find((installment) => installment.paymentDue === new Date().getMonth() && installment.paid === false);
-      if (currentInstallment) {
+      if (currentInstallment !== undefined) {
         body = {
           ...currentInstallment,
           paid: true,
           paymentDate: new Date().toString(),
           is_installment: true
         };
-
-        console.log(body);
-
-        // useUpdateGoal(body);        
-        // dispatch(setData({ currentGoal: newGoal }));
+      } else {
+        dispatch(setInfo({ message: "You have already paid this month's installment.", type: "info", show: true }))
+        return;
       }
     } else {
       body = {
@@ -52,13 +50,14 @@ export default function Goals() {
         paymentDate: new Date().toString(),
         is_installment: false
       };
-
-      console.log(body);
     }
 
     updateGoal({ id: currentGoal.id, body }).then((result) => {
-      console.log(result);
-      // dispatch(setData({ currentGoal: result }));
+      if (result.error) {
+        dispatch(setInfo({ message: result.error.message, type: "error", show: true }))
+      } else {
+        dispatch(setInfo({ message: "Goal updated successfully.", type: "success", show: true }))
+      }
     });
   };
 
@@ -104,7 +103,7 @@ export default function Goals() {
                 onMouseLeave={() => setShowTip(false)}
                 className="text-sm px-2 py-2 hover:bg-gray-100 border border-gray-200 rounded-lg relative"
               >
-                Save Now
+                {updateGoalIsLoading ? <Pulser /> : "Save Now"}
                 {showTip &&
                   <span className="absolute left-[15%] top-[100%] text-xs">
                     This will mimic the save action

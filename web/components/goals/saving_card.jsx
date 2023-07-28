@@ -32,7 +32,7 @@ export default function SavingsCard({
 
   return (
     <div
-      className={`px-2 py-2 flex flex-row justify-between items-center w-[200px] max-sm:w-[80%] h-[80px] rounded-md border ${goal.saved ? "border-green-700 border-2" : "border-gray-600"
+      className={`px-2 py-2 flex flex-row justify-between items-center w-[200px] max-sm:w-[80%] h-[80px] rounded-md border border-gray-300 ${goal.paid ? "bg-green-50" : "bg-white"
         }`}
     >
       {showMoreDetails ?
@@ -64,7 +64,7 @@ export default function SavingsCard({
             <p className="w-fit bg-indigo-100 rounded-lg px-1 text-[10px]">{new Date(goal.set).toLocaleDateString()}</p>
           </div>
           <div className="flex flex-col justify-between items-end h-full">
-            {goal.saved ?
+            {goal.paid ?
               <span
                 className="bg-green-500 text-center rounded-sm px-2 py-1 text-xs"
               >
