@@ -6,11 +6,25 @@ import formatNumber from "@helpers/format_number";
 
 Chart.register(CategoryScale, LinearScale, BarElement);
 
-export default function IncomeSavingsExpenditureChart({ expenditures }) {
-  // const stateData = useSelector((state) => state.data.value);
+export default function IncomeSavingsExpenditureChart({
+  expenditures,
+  currency,
+}) {
+  const stateData = useSelector((state) => state.data.value);
   const expenses = expenditures?.reduce((acc, cur) => {
     return acc + Number.parseInt(cur.data.amount);
   }, 0);
+
+  let intended_savings = 0;
+
+  if (!stateData?.goals || stateData?.goals.length === 0) {
+    console.log("No goals");
+  }
+  else {
+    intended_savings = stateData?.goals?.reduce((acc, cur) => {
+      return acc + Number.parseInt(cur.data.amount);
+    }, 0);
+  }
 
   const data = {
     labels: ["Income", "Savings", "Expenses"],
@@ -18,7 +32,7 @@ export default function IncomeSavingsExpenditureChart({ expenditures }) {
       {
         label: "Amount",
         // TODO: Fix this | Use the data from the state to populate the chart [Income, Savings][To change when month changes]
-        data: [2000000, 800000, expenses],
+        data: [stateData?.settings?.income?.amount, intended_savings, expenses],
         backgroundColor: ["#36A2EB", "#FFCE56", "#FF6384"],
       },
     ],
@@ -38,7 +52,7 @@ export default function IncomeSavingsExpenditureChart({ expenditures }) {
         ticks: {
           beginAtZero: true,
           callback: function (value, index, values) {
-            return "RWF " + formatNumber(value);
+            return `${currency || ""} ` + formatNumber(value);
           },
         },
         title: {

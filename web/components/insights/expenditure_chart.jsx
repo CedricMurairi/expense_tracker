@@ -2,8 +2,20 @@ import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import formatNumber from "@helpers/format_number";
 
-export default function ExpenditureChart({ dataEntry }) {
+export default function ExpenditureChart({ dataEntry, currency }) {
   const get_expenditures = () => {
+    const cleanData = Object.values(
+      dataEntry.reduce((acc, obj) => {
+        const { key, value } = obj;
+        if (acc.hasOwnProperty(key)) {
+          acc[key].value += value;
+        } else {
+          acc[key] = { ...obj };
+        }
+        return acc;
+      }, {})
+    );
+
     let expenditures = [];
     dataEntry.map((expenditure) => {
       expenditures.push({
@@ -68,17 +80,18 @@ export default function ExpenditureChart({ dataEntry }) {
           .append("text")
           .attr("class", "label")
           .attr("x", width / 2)
-          .attr("y", height - 10)
+          .attr("y", height)
           .text(
             `${d.data.label
               .split(" ")
               .filter((word) => word != "Expenditure")
-              .join(" ")}: ${formatNumber(d.data.value)} RWF`
+              .join(" ")}: ${formatNumber(d.data.value)} ${currency || ""}`
           )
           .attr("text-anchor", "middle")
           .attr("alignment-baseline", "middle")
-          .attr("font-size", 15)
-          .attr("font-weight", 600);
+          .attr("font-size", 20)
+          .attr("font-weight", "normal")
+          .attr("background", "black");
       })
       .on("mouseout", function (event, d) {
         d3.select(this).transition().duration(200).attr("d", arc);
