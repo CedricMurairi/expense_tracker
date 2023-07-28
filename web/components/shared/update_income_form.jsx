@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useSetIncomeMutation } from "@data/base_api";
 import { updateSettings } from "@store/dataSlice";
 import { useDispatch } from "react-redux";
+import { setInfo } from "@store/infoSlice";
 import Pulser from "@components/shared/pulser";
 
 export default function UpdateIncomeForm({ incomeData }) {
@@ -20,6 +21,13 @@ export default function UpdateIncomeForm({ incomeData }) {
       setIncome(body)
         .then((result) => {
           if (result) {
+            dispatch(
+              setInfo({
+                message: "Income updated",
+                type: "success",
+                show: true,
+              })
+            );
             dispatch(updateSettings(result.data));
           }
         })

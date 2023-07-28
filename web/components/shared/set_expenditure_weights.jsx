@@ -7,7 +7,6 @@ import Pulser from "./pulser";
 
 export default function SetExpenditureWeights({ weights }) {
   const dispatch = useDispatch();
-  console.log(weights);
   const [setWeights, { isLoading }] = useSetWeightsMutation();
   const [expenditureWeights, setExpenditureWeights] = useState({
     "Food Expenditure": weights["Food Expenditure"] || 0,
@@ -69,7 +68,6 @@ export default function SetExpenditureWeights({ weights }) {
               show: true,
             })
           );
-          console.log(result);
         }
       });
     }
@@ -120,9 +118,8 @@ export default function SetExpenditureWeights({ weights }) {
           onChange={() => setCurrentWeight(weigthRef.current.value)}
         />
         <span
-          className={`${
-            totalWeight > 100 ? "bg-red-300" : "bg-green-300"
-          } w-fit h-fit rounded-md px-1`}
+          className={`${totalWeight > 100 ? "bg-red-300" : "bg-green-300"
+            } w-fit h-fit rounded-md px-1`}
         >
           {totalWeight}
           {"%"}
@@ -150,7 +147,9 @@ export default function SetExpenditureWeights({ weights }) {
         className="text-sm bg-slate-600 text-white rounded-md py-1 px-2"
       >
         {isLoading ? (
-          <Pulser primary={"bg-gray-300"} secondary={"bg-white"} />
+          <span className="flex justify-center items-center py-[2px]">
+            <Pulser primary={"bg-gray-300"} secondary={"bg-white"} />
+          </span>
         ) : totalWeight === 100 ? (
           "Update"
         ) : (
