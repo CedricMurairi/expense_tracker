@@ -145,14 +145,14 @@ export default function Form() {
             {Labels.map((label, index) => {
               return (
                 <option key={index} value={index + 1}>
-                  {label}
+                  {label.split(" ").filter(word => word != "Expenditure").join(" ")}
                 </option>
               );
             })}
           </SelectElement>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-2 w-[70%] m-auto">
+        <div className="flex flex-wrap justify-center gap-2 w-[70%] m-auto">
           {Labels.map((label, index) => {
             return (
               <Label

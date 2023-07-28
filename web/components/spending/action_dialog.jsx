@@ -86,6 +86,7 @@ export default function ExpenditureActionDialog({
                       Number.parseFloat(actionAmount) +
                       Number.parseFloat(updatedResult.data.data.amount);
                     dispatch(updateAnExpenditure(updatedResult.data));
+                    // dispatch(updateMonthlySpendings(monthlySpendings))
                     setShowActions(false);
                     setEdit(false);
                     dispatch(
