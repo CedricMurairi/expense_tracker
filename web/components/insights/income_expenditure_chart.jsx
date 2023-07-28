@@ -22,6 +22,15 @@ export default function IncomeSavingsExpenditureChart({
   }
   else {
     intended_savings = stateData?.goals?.reduce((acc, cur) => {
+      if (cur.data.installments) {
+        const currentInstallment = cur.data.payments.find(
+          (installment) =>
+            installment.paymentDue === new Date().getMonth()
+        );
+        if (currentInstallment !== undefined) {
+          return acc + Number.parseInt(currentInstallment.amountPaid);
+        }
+      }
       return acc + Number.parseInt(cur.data.amount);
     }, 0);
   }

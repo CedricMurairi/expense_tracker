@@ -74,13 +74,13 @@ export default function Form() {
       <form className="flex flex-col justify-center items-center mb-10">
         <input
           ref={motifRef}
-          className="px-5 py-2 border mb-1 mt-5 rounded-md border-gray-400"
+          className="outline-none px-5 py-2 border mb-1 mt-5 rounded-md border-gray-400"
           type="text"
           placeholder="Saving Motif"
         />
         <input
           ref={amountRef}
-          className="w-fit px-5 py-2 mt-1 mb-2 border rounded-md border-gray-400"
+          className="outline-none w-fit px-5 py-2 mt-1 mb-2 border rounded-md border-gray-400"
           type="text"
           placeholder="Amount"
         />
@@ -91,7 +91,7 @@ export default function Form() {
         <input
           disabled={!isPayingInstallments}
           ref={installmentRef}
-          className="w-fit px-5 py-2 mt-1 mb-5 border rounded-md border-gray-400"
+          className="outline-none w-fit px-5 py-2 mt-1 mb-5 border rounded-md border-gray-400"
           type="text"
           placeholder="How many?"
         />
