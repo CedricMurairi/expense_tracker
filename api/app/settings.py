@@ -30,3 +30,18 @@ def income():
     elif request.method == "PUT":
         income_doc_ref.update(data)
         return {"income": data}, 200
+
+
+@settings_blueprint.route('/weights', methods=['GET', 'POST', 'PUT'])
+def weights():
+    uid = g.token["uid"]
+    data = g.data
+    weights_doc_ref = db.collection('data').document(
+        uid).collection('settings').document('weights')
+    if request.method == "POST":
+        weights_doc_ref.set(data)
+        return {"weights": data}, 200
+
+    elif request.method == "PUT":
+        weights_doc_ref.update(data)
+        return {"weights": data}, 200
