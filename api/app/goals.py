@@ -41,18 +41,16 @@ def update_goal(goal_id):
     if data["is_installment"]:
         installment_number = data['installmentNumber']
 
-        # Update the specific installment's fields
         if 0 <= installment_number < len(payments):
             payments[installment_number]["paid"] = data['paid']
             payments[installment_number]["paymentDate"] = data['paymentDate']
 
-            # Update the entire "payments" array with the modified version
             goal_ref.update({"payments": payments})
 
-        print("Payment-Count: ", payments.count(True))
+            all_paid = all([payment["paid"] for payment in payments])
+            goal_ref.update({"paid": all_paid})
 
     else:
-        # If it's not an installment, update the main fields directly
         goal_ref.update({
             "paid": data['paid'],
             "paymentDate": data['paymentDate']
