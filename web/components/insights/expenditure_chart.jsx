@@ -17,11 +17,17 @@ export default function ExpenditureChart({ dataEntry, currency }) {
     );
 
     let expenditures = [];
-    dataEntry.map((expenditure) => {
-      expenditures.push({
-        label: expenditure.data.category,
-        value: Math.round(expenditure.data.amount),
-      });
+    dataEntry.map((entry) => {
+      let existing_index = expenditures.findIndex(item => item.label === entry.data.category);
+
+      if (existing_index !== -1) {
+        expenditures[existing_index].value += Math.round(entry.data.amount);
+      } else {
+        expenditures.push({
+          label: entry.data.category,
+          value: Math.round(entry.data.amount),
+        });
+      }
     });
 
     return expenditures;
