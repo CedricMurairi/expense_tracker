@@ -15,6 +15,18 @@ export default function Form() {
 
   const [isPayingInstallments, setIsPayingInstallments] = useState(false);
 
+  const getDate = (month, increment) => {
+    let date = new Date();
+    // if (month + increment) is greater than 11, then we have to start from 0
+    if (month + increment > 11) {
+      date.setMonth(month + increment - 12);
+      date.setFullYear(date.getFullYear() + 1);
+    } else {
+      date.setMonth(month + increment);
+    }
+    return date.toLocaleString();
+  }
+
   function generatePayments(installmentCount) {
     const payments = [];
 
@@ -23,7 +35,7 @@ export default function Form() {
         number: i,
         amount: amountRef.current.value / installmentCount,
         paymentDate: null,
-        paymentDue: new Date().getMonth() + i,
+        paymentDue: getDate(new Date().getMonth(), i),
         paid: false,
       };
       payments.push(installment);
@@ -43,7 +55,7 @@ export default function Form() {
         payments: generatePayments(installmentRef.current.value),
         set: new Date().toLocaleString(),
         paymentDate: null,
-        paymentDue: new Date().getMonth() + installmentRef.current.value,
+        paymentDue: getDate(new Date().getMonth(), Number.parseInt(installmentRef.current.value)),
         paid: false
       }
     } else {

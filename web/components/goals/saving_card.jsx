@@ -28,11 +28,18 @@ export default function SavingsCard({
     }
   }
 
+  function datify(date = "") {
+    if (date === "") {
+      return new Date().toLocaleDateString();
+    }
+    return new Date(date).toLocaleDateString();
+  }
+
   const progress = (getTotalPayment() / goal.amount) * 100;
 
   return (
     <div
-      className={`px-2 py-2 flex flex-row justify-between items-center w-[200px] max-sm:w-[80%] h-[80px] rounded-md border border-gray-300 ${goal.paid ? "bg-green-50" : new Date(goal.set).toLocaleDateString() < new Date().toLocaleDateString() && !goal.installments ? "bg-red-50" : "bg-white"
+      className={`px-2 py-2 flex flex-row justify-between items-center w-[200px] max-sm:w-[80%] h-[80px] rounded-md border border-gray-300 ${goal.paid ? "bg-green-50" : datify(goal.set) < datify() && !goal.installments ? "bg-red-50" : "bg-white"
         }`}
     >
       {showMoreDetails ?
@@ -46,7 +53,8 @@ export default function SavingsCard({
             {
               goal.payments.map((installment, index) =>
                 <div key={index} className="flex flex-col text-xs justify-start items-center">
-                  <button className={`px-2 py-1 font-bold rounded-lg ${installment.paid ? "bg-green-300" : installment.paymentDue < new Date().getMonth() ? "bg-red-300" : "bg-gray-300"}`}>{formatNumber(installment.amountPaid)}</button>
+                  {/* TODO: Fix bug -- displaying red for non overdue payments */}
+                  <button className={`px-2 py-1 font-bold rounded-lg ${installment.paid ? "bg-green-300" : datify(installment.paymentDue) === datify() ? "bg-orange-300" : datify(installment.paymentDue) < datify() ? "bg-red-300" : "bg-gray-300"}`}>{formatNumber(installment.amount)}</button>
                 </div>
               )
             }
@@ -57,7 +65,7 @@ export default function SavingsCard({
             <h3 className="text-sm">{chopSentence(goal.motif, 15)}</h3>
             <p className="text-lg font-bold">
               {state?.settings?.income?.currency}
-              {goal.installments_count > 1
+              {goal.payments
                 ? formatNumber(goal.amount / goal.installments_count)
                 : formatNumber(goal.amount)}
             </p>
