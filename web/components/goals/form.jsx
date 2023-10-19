@@ -20,8 +20,8 @@ export default function Form() {
 
     for (let i = 0; i < installmentCount; i++) {
       const installment = {
-        installmentNumber: i,
-        amountPaid: amountRef.current.value / installmentCount,
+        number: i,
+        amount: amountRef.current.value / installmentCount,
         paymentDate: null,
         paymentDue: new Date().getMonth() + i,
         paid: false,
@@ -41,17 +41,19 @@ export default function Form() {
         installments: isPayingInstallments,
         installments_count: installmentRef.current.value,
         payments: generatePayments(installmentRef.current.value),
-        set: new Date().toString(),
+        set: new Date().toLocaleString(),
         paymentDate: null,
+        paymentDue: new Date().getMonth() + installmentRef.current.value,
         paid: false
       }
     } else {
       body = {
         motif: motifRef.current.value,
         amount: amountRef.current.value,
-        set: new Date().toString(),
+        set: new Date().toLocaleString(),
         paid: false,
         paymentDate: null,
+        paymentDue: new Date().getMonth(),
       }
     }
 
