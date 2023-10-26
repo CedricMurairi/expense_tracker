@@ -43,4 +43,4 @@ web/.vercel
 # typescript
 *.tsbuildinfo
 web/next-env.d.ts
-api/notebook
+notebook

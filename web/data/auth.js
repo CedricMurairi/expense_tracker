@@ -1,6 +1,5 @@
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth, db } from "firebaseconfig";
-import { doc, setDoc } from "firebase/firestore/lite";
+import { auth } from "firebaseconfig";
 
 export function continueWithGoogle() {
   const provider = new GoogleAuthProvider();
@@ -16,16 +15,7 @@ export function continueWithGoogle() {
     })
     .then(() => {
       const user = auth.currentUser;
-      setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        refreshToken: user.refreshToken,
-        isAnonymous: user.isAnonymous,
-      }).then(() => {
-        return user;
-      });
+      return user;
     })
     .catch((error) => {
       const errorcode = error.code;

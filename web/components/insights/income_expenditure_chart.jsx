@@ -1,26 +1,47 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import { Chart } from "chart.js";
-import { CategoryScale, LinearScale, BarElement } from "chart.js";
-Chart.register(CategoryScale, LinearScale, { bar: BarElement });
+import { Chart, CategoryScale, LinearScale, BarElement } from "chart.js";
+import { useSelector } from "react-redux";
+import formatNumber from "@helpers/format_number";
 
-export default function IncomeSavingsExpenditureChart({ user_data }) {
-  const income = user_data["income"];
-  const savings = user_data["savings"];
-  const get_total_expenditure = () => {
-    let spendings = 0;
-    Object.keys(user_data["expenditures"]).map((expenditure) => {
-      spendings += user_data["expenditures"][expenditure];
-    });
-    return spendings;
-  };
+Chart.register(CategoryScale, LinearScale, BarElement);
+
+export default function IncomeSavingsExpenditureChart({
+  expenditures,
+  currency,
+}) {
+  const stateData = useSelector((state) => state.data.value);
+  const expenses = expenditures?.reduce((acc, cur) => {
+    return acc + Number.parseInt(cur.data.amount);
+  }, 0);
+
+  let intended_savings = 0;
+
+  if (!stateData?.goals || stateData?.goals.length === 0) {
+    console.log("No goals");
+  }
+  else {
+    intended_savings = stateData?.goals?.reduce((acc, cur) => {
+      if (cur.data.installments) {
+        const currentInstallment = cur.data.payments.find(
+          (installment) =>
+            installment.paymentDue === new Date().getMonth()
+        );
+        if (currentInstallment !== undefined) {
+          return acc + Number.parseInt(currentInstallment.amountPaid);
+        }
+      }
+      return acc + Number.parseInt(cur.data.amount);
+    }, 0);
+  }
 
   const data = {
-    labels: ["Income", "Savings", "Expenditures"],
+    labels: ["Income", "Savings", "Expenses"],
     datasets: [
       {
         label: "Amount",
-        data: [income, savings, get_total_expenditure()],
+        // TODO: Fix this | Use the data from the state to populate the chart [Income, Savings][To change when month changes]
+        data: [stateData?.settings?.income?.amount, intended_savings, expenses],
         backgroundColor: ["#36A2EB", "#FFCE56", "#FF6384"],
       },
     ],
@@ -29,42 +50,39 @@ export default function IncomeSavingsExpenditureChart({ user_data }) {
   const options = {
     responsive: true,
     scales: {
-      xAxes: [
-        {
-          stacked: true,
-          gridLines: {
-            display: false,
+      x: {
+        stacked: true,
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+          callback: function (value, index, values) {
+            return `${currency || ""} ` + formatNumber(value);
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          ticks: {
-            beginAtZero: true,
-            callback: function (value, index, values) {
-              return "$" + value.toLocaleString();
-            },
-          },
-          scaleLabel: {
-            display: true,
-            labelString: "Amount ($)",
-          },
+        title: {
+          display: true,
+          text: "Amount",
         },
-      ],
-    },
-    
-    legend: {
-      labels: {
-        fontColor: "#333",
       },
     },
-    tooltips: {
-      callbacks: {
-        label: function (tooltipItem, data) {
-          var label = data.datasets[tooltipItem.datasetIndex].label || "";
-          label += ": $" + tooltipItem.yLabel.toLocaleString();
-          return label;
+    plugins: {
+      legend: {
+        labels: {
+          color: "#333",
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            let label = context.dataset.label || "";
+            label += ": $" + context.parsed.y.toLocaleString();
+            return label;
+          },
         },
       },
     },

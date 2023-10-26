@@ -1,14 +1,33 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import formatNumber from "@helpers/format_number";
 
-export default function ExpenditureChart({ user_data }) {
+export default function ExpenditureChart({ dataEntry, currency }) {
   const get_expenditures = () => {
+    const cleanData = Object.values(
+      dataEntry.reduce((acc, obj) => {
+        const { key, value } = obj;
+        if (acc.hasOwnProperty(key)) {
+          acc[key].value += value;
+        } else {
+          acc[key] = { ...obj };
+        }
+        return acc;
+      }, {})
+    );
+
     let expenditures = [];
-    Object.keys(user_data["expenditures"]).map((expenditure) => {
-      expenditures.push({
-        label: expenditure,
-        value: Math.round(user_data["expenditures"][expenditure]),
-      });
+    dataEntry.map((entry) => {
+      let existing_index = expenditures.findIndex(item => item.label === entry.data.category);
+
+      if (existing_index !== -1) {
+        expenditures[existing_index].value += Math.round(entry.data.amount);
+      } else {
+        expenditures.push({
+          label: entry.data.category,
+          value: Math.round(entry.data.amount),
+        });
+      }
     });
 
     return expenditures;
@@ -61,18 +80,24 @@ export default function ExpenditureChart({ user_data }) {
             d3
               .arc()
               .innerRadius(0)
-              .outerRadius(Math.min(width, height) / 2 - padding + 20)
+              .outerRadius(Math.min(width, height) / 2 - padding + 10)
           );
         svg
           .append("text")
           .attr("class", "label")
           .attr("x", width / 2)
-          .attr("y", height / 2)
-          .text(`${d.data.label}: RWF${d.data.value.toLocaleString()}`)
+          .attr("y", height)
+          .text(
+            `${d.data.label
+              .split(" ")
+              .filter((word) => word != "Expenditure")
+              .join(" ")}: ${formatNumber(d.data.value)} ${currency || ""}`
+          )
           .attr("text-anchor", "middle")
           .attr("alignment-baseline", "middle")
-          .attr("font-size", 15)
-          .attr("font-weight", 800)
+          .attr("font-size", 20)
+          .attr("font-weight", "normal")
+          .attr("background", "black");
       })
       .on("mouseout", function (event, d) {
         d3.select(this).transition().duration(200).attr("d", arc);
@@ -80,7 +105,7 @@ export default function ExpenditureChart({ user_data }) {
       })
       .each(function (d) {
         this._current = d;
-      }) // store the initial angles
+      })
       .transition()
       .duration(1000)
       .attrTween("d", function (d) {
@@ -104,11 +129,11 @@ export default function ExpenditureChart({ user_data }) {
     }
 
     animateChart();
-  }, []);
+  }, [dataEntry]);
 
   return (
     <div>
-      <svg ref={chartRef} width="400" height="300"></svg>
+      <svg ref={chartRef} width="425" height="325"></svg>
     </div>
   );
 }

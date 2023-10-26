@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { continueWithGoogle } from "@data/auth";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
@@ -11,22 +11,20 @@ import { auth } from "firebaseconfig";
 
 export default function Login() {
   const route = useRouter();
-  const info = useSelector((state) => state.info.value);
   const dispatch = useDispatch();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user !== undefined && user !== null) {
+        const userData = user.providerData[0];
+        dispatch(setUser(userData));
         dispatch(
-          setUser({
-            uid: user.uid,
-            name: user.displayName,
-            email: user.email,
-            photo: user.photoURL,
-            accessToken: user.accessToken,
+          setInfo({
+            message: "You are logged in",
+            type: "info",
+            show: true,
           })
         );
-        dispatch(setInfo({ message: "You are already logged in", type: "info", show: true }));
         route.push("/");
       }
     });
@@ -34,17 +32,7 @@ export default function Login() {
 
   const login = async () => {
     try {
-      const user = continueWithGoogle();
-      dispatch(
-        setUser({
-          uid: user.uid,
-          name: user.displayName,
-          email: user.email,
-          photo: user.photoURL,
-          accessToken: user.accessToken,
-        })
-      );
-      route.push("/");
+      continueWithGoogle();
     } catch (e) {
       console.log(e);
     }
@@ -80,7 +68,7 @@ export default function Login() {
         </div>
         <div>
           <motion.div
-            className="text-2xl font-bold text-center mb-10 text-gray-500"
+            className="max-sm:text-lg text-2xl font-bold text-center mb-10 text-gray-500"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
