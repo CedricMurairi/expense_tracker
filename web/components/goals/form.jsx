@@ -65,7 +65,7 @@ export default function Form() {
         set: new Date().toLocaleString(),
         paid: false,
         paymentDate: null,
-        paymentDue: new Date().getMonth(),
+        paymentDue: new Date().toLocaleString(),
       }
     }
 

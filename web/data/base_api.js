@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["Expenditures", "Settings", "Goals"],
+  tagTypes: ["Expenditures", "Settings", "Goals", "Recommendations"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: async (headers, { getState }) => {
@@ -111,6 +111,18 @@ export const baseApi = createApi({
       }),
       invalidatesTags: ["Goals"],
     }),
+
+    // RECONNENDATIONS
+    getRecommendations: builder.query({
+      query: () => ({
+        url: '/recommendations/',
+        method: "GET",
+      }),
+      keepUnusedDataFor: 0,
+      providesTags: ["Recommendations"],
+    }),
+
+
   }),
 });
 
@@ -119,6 +131,7 @@ export const {
   useDeleteExpenditureMutation,
   useGetExpenditureQuery,
   useGetExpendituresQuery,
+  useGetRecommendationsQuery,
   useUpdateExpenditureMutation,
   useGetDataAndSettingsQuery,
   useSetIncomeMutation,
