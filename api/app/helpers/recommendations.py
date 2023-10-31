@@ -2,7 +2,7 @@ import joblib
 import pandas as pd
 
 
-def get_recommendations(data):
+def get_recommendations(expenditures, income, weights, savings):
     '''
         The model predicts what the user can save based oon their spendings and recommends how much to cut 
         and on what to get closer to the desired saving goal.
@@ -13,15 +13,16 @@ def get_recommendations(data):
 
     recommendation = {}
 
-    weights = data['weights']
-    expenditures = data['expenditures']
+    weights = weights
+    expenditures = expenditures
+    print(expenditures)
 
-    income = data['income']
-    savings = data['savings']
+    income = income
+    savings = savings
 
     max_spending = {}
-    for col in weights:
-        max_spending[col] = (income - savings) * weights[col]
+    for key, weight in weights.items():
+        max_spending[key] = (income - savings) * weight
 
     user_df = pd.DataFrame.from_dict(
         {'Total Income': [income], **expenditures, 'Savings': [savings]})
