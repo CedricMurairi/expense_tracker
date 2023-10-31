@@ -116,15 +116,5 @@ def docs():
     return render_template("docs.html")
 
 
-@app.route("/firebase-test")
-def firebase_test():
-    res = {}
-    ref = db.collection("users")
-    docs = ref.stream()
-    for doc in docs:
-        res[doc.id] = doc.to_dict()
-    return res
-
-
 if __name__ == "__main__":
     app.run(debug=True)

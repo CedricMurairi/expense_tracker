@@ -1,39 +1,30 @@
 import React, { useEffect, useState } from "react";
-import MainLayout from "@components/layout/main_layout";
-import UserData from "@mock/user_one.json";
-import fetch_recommendations from "@data/recomendation";
+import MainLayout from "@components/layout/main_layout"; 2
 import RecommendationCard from "@components/recommendation/card";
 import SavingsRecommendationCard from "@components/recommendation/savings_card";
-import getFirebaseClientIdToken from "@helpers/get_id_token";
+import { useGetRecommendationsQuery } from "@data/base_api";
+import Pulser from "@components/shared/pulser";
 
 export default function Recommendation() {
   const [recommendations, setRecommendations] = useState(null);
 
-  useEffect(() => {
-    async function get_recommendations() {
-      const idToken = await getFirebaseClientIdToken();
-      fetch_recommendations(UserData, idToken)
-        .then((data) => {
-          setRecommendations(data);
-          console.log(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+  const { data, error, isLoading } = useGetRecommendationsQuery();
 
-    get_recommendations();
-  }, []);
+  useEffect(() => {
+    if (data) {
+      setRecommendations(data);
+    }
+  }, [data]);
 
   return (
     <MainLayout headerContent={"Recommendation"} page={"Recommendation"}>
-      {/* To use coin system [Bounty Coin] with an initial 1 coin on registration -- users will use these coins to get recommendations [the app uses ne cin every month fr the mnthy recommendation] -- for user who decide t get custom recommendation on the fly by entering manually the mnthly expenditure by category, income, weights and savings we charge 2 coins [2$] -- this way it is gamified a bit and they do not have to subscribe -- just pay for cins when they need recommendations */}
-      <div className="grid grid-cols-3 gap-10">
+      <div className="grid grid-row-3 gap-10">
+        {isLoading && <p className="flex justify-center items-center mt-5"><Pulser primary={"bg-gray-400"} secondary={"bg-gray-700"} /></p>}
         {recommendations &&
-          Object.keys(recommendations).map((recommendation, index) =>
-            recommendation === "possible_savings" ||
-            recommendation === "potential_savings" ? (
-              <div key={index} className="overflow-auto">
+          Object.keys(recommendations).map((recommendation, index) => {
+            return recommendation === "possible_savings" ||
+              recommendation === "potential_savings" ? (
+              <div key={index} className="overflow-auto flex flex-col">
                 <h1 className="text-2xl underline">
                   {recommendation.split("_").join(" ").toUpperCase()}
                 </h1>
@@ -43,7 +34,7 @@ export default function Recommendation() {
               </div>
             ) : (
               <div key={index}>
-                <h1 className="text-2xl underline">
+                <h1 className="text-2xl underline flex flex-row">
                   {recommendation.toUpperCase()}
                 </h1>
                 {Object.keys(recommendations[recommendation]).map(
@@ -57,6 +48,7 @@ export default function Recommendation() {
                 )}
               </div>
             )
+          }
           )}
       </div>
     </MainLayout>

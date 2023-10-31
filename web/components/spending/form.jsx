@@ -7,10 +7,7 @@ import Button from "@components/shared/button";
 import useWindowSize from "@hooks/window_size";
 import { useDispatch, useSelector } from "react-redux";
 import { setInfo } from "@store/infoSlice";
-// import {
-//   updateMonthlySpendings,
-//   addExpenditure as addAnExpenditure,
-// } from "@store/dataSlice";
+
 import SelectElement from "@components/shared/select";
 import { useAddExpenditureMutation } from "@data/base_api";
 import Pulser from "@components/shared/pulser";
@@ -72,17 +69,10 @@ export default function Form() {
       category: Labels[selectedLabel - 1],
       payment_type: PaymentTypes[selectedPayment],
       amount: amountRef.current.value,
-      date: new Date().toString(),
+      date: new Date().toLocaleString(),
     };
 
     addExpenditure(data).then((result) => {
-      // const newAmount = result.data.data.amount;
-      // const newMonthlySpendings =
-      //   stateData?.monthlySpendings + Number.parseFloat(newAmount);
-      // dispatch(
-      //   addAnExpenditure({ data: result.data.data, id: result.data.id })
-      // );
-      // dispatch(updateMonthlySpendings(newMonthlySpendings));
       amountRef.current.value = "";
       setSelectedLabel(0);
       dispatch(setInfo({ message: "Recorded", type: "success", show: true }));
