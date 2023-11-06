@@ -9,8 +9,8 @@ The app is a proof of concept for an ideal app that does the following:
 
 ## Application
 
-- API (Hosted on Heroku): [https://cashless-tracker-api.herokuapp.com](https://cashless-tracker-api.herokuapp.com)
-- Web Client (Hosted on Netlify): [https://expenditures-tracker.netlify.app](https://expenditures-tracker.netlify.app)
+- API (Hosted on Heroku): [https://extracker-api.onrender.com](https://extracker-api.onrender.com)
+- Web Client (Hosted on Netlify): [https://ex-tracker.cedricmurairi.tech](https://ex-tracker.cedricmurairi.tech)
 
 ## How to Run (this guide assumes you are on a UNIX OS like Linux or Mac OS)
 
