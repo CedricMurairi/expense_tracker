@@ -47,10 +47,9 @@ def verify_id_token(id_token):
 
 @app.before_request
 def check_user():
-    print("Headers: ", request.headers)
-    print("Authorization: ", request.authorization)
-    id_token = request.headers.get("Authorization", None)
-    g.token = verify_id_token(id_token)
+    if request.method in ["GET", "DELETE"]:
+        id_token = request.headers.get("Authorization").split(" ")[1]
+        g.token = verify_id_token(id_token)
 
     if request.method == "POST" or request.method == "PUT":
         if request.content_type != 'application/json':
@@ -61,6 +60,9 @@ def check_user():
             raise NoDataProvidedError()
 
         g.data = data
+
+        id_token = request.headers.get("Authorization").split(" ")[1]
+        g.token = verify_id_token(id_token)
 
 
 @app.errorhandler(InvalidContentTypeError)
