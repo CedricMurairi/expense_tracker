@@ -37,7 +37,6 @@ class UnauthorizedClientError(Exception):
 
 
 def verify_id_token(id_token):
-    print("This is the ID token: ", id_token)
     try:
         decoded_token = auth.verify_id_token(id_token, app=firebase_app)
         return decoded_token
@@ -48,6 +47,9 @@ def verify_id_token(id_token):
 
 @app.before_request
 def check_user():
+    id_token = request.headers.get("Authorization", None)
+    g.token = verify_id_token(id_token)
+
     if request.method == "POST" or request.method == "PUT":
         if request.content_type != 'application/json':
             raise InvalidContentTypeError()
@@ -57,13 +59,6 @@ def check_user():
             raise NoDataProvidedError()
 
         g.data = data
-
-        id_token = request.authorization.token if request.authorization else None
-        g.token = verify_id_token(id_token)
-
-    if request.method == "GET" or request.method == "DELETE":
-        id_token = request.authorization.token if request.authorization else None
-        g.token = verify_id_token(id_token)
 
 
 @app.errorhandler(InvalidContentTypeError)
