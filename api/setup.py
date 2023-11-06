@@ -37,6 +37,7 @@ class UnauthorizedClientError(Exception):
 
 
 def verify_id_token(id_token):
+    print("This is the ID token: ", id_token)
     try:
         decoded_token = auth.verify_id_token(id_token, app=firebase_app)
         return decoded_token
