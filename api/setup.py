@@ -47,8 +47,8 @@ def verify_id_token(id_token):
 
 @app.before_request
 def check_user():
-    print(request.headers)
-    print(request.authorization)
+    print("Headers: ", request.headers)
+    print("Authorization: ", request.authorization)
     id_token = request.headers.get("Authorization", None)
     g.token = verify_id_token(id_token)
 
