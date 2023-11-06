@@ -17,6 +17,8 @@ web/.pnp.js
 # testing
 web/coverage
 
+*.txt
+
 # next.js
 web/.next/
 web/out/
